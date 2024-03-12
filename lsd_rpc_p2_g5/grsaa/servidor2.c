@@ -10,10 +10,25 @@ void *
 notificarplcmms_1_svc(int *argp, struct svc_req *rqstp)
 {
 	static char * result;
+CLIENT *clnt;
+	void  *result_1;
+	int  notificarplcmms_1_arg;
 
-	/*
-	 * insert server code here
-	 */
+#ifndef	DEBUG
+	clnt = clnt_create (host, gestion_saa, gestion_saa_version, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+#endif	/* DEBUG */
+
+	result_1 = notificarplcmms_1(&notificarplcmms_1_arg, clnt);
+	if (result_1 == (void *) NULL) {
+		clnt_perror (clnt, "call failed");
+	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
 
 	return (void *) &result;
 }
