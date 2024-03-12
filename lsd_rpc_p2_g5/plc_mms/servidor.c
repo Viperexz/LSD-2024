@@ -4,9 +4,6 @@
  * as a guideline for developing your own functions.
  */
 
-#include "gestionUsuarios.h"
-
-
 #include <stdbool.h>
 #include "gestionUsuarios.h"
 
@@ -57,3 +54,5 @@ consultarusuario_1_svc(int *argp, struct svc_req *rqstp)
 
 	return &result;
 }
+
+
