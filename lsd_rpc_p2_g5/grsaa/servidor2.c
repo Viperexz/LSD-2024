@@ -11,9 +11,7 @@ notificarplcmms_1_svc(int *argp, struct svc_req *rqstp)
 {
 	static char * result;
 
-	/*
-	 * insert server code here
-	 */
+	printf("El dispositivo PLC_MMS con id: %d completo sus registro y esta activo en el sistema\n", argp);
 
 	return (void *) &result;
 }

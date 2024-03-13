@@ -5,54 +5,52 @@
  */
 
 #include <stdbool.h>
+#include <string.h>
 #include "gestionUsuarios.h"
 
 struct datos_usuario datos;
 
 void inicializarDatos()
 {
-	datos.id = 0;
-	strcpy(datos.nombreCompleto,"Operador");
-	strcpy(datos.usuario,"admin-oper");
-	strcpy(datos.clave,"admin-oper");
-	printf("Se inicializaron los datos. \n");
+    datos.id = 0;
+    strcpy(datos.nombreCompleto, "Operador");
+    strcpy(datos.usuario, "admin-oper");
+    strcpy(datos.clave, "admin-oper");
+    printf("Se inicializaron los datos. \n");
 }
-
 
 bool_t *
 abrirsesion_1_svc(datos_sesion *argp, struct svc_req *rqstp)
 {
-	static bool_t  result;
-	inicializarDatos();
-	printf("Se esta intentando iniciar sesion. Usuario: %d \n", argp->id);
-	int varBandera =strcmp(argp->usuario,datos.usuario) + strcmp(argp->clave,datos.clave);
-	if(varBandera != 0 && argp->id == datos.id)
-	{
-		printf("Datos erroneos... \n");
-		result = false;
-	}
-	else
-	{
-		printf("Inicio correcto... \n");
-		result = true;
-	}
+    static bool_t result;
+    inicializarDatos();
+    printf("Se está intentando iniciar sesión. Usuario: %d \n", argp->id);
+    int varBandera = strcmp(argp->usuario, datos.usuario) + strcmp(argp->clave, datos.clave);
+    if (varBandera != 0 || argp->id != datos.id)
+    {
+        printf("Datos erróneos... \n");
+        result = 0;
+    }
+    else
+    {
+        printf("Inicio correcto... \n");
+        result = 1;
+    }
 
-	return &result;
+    return &result;
 }
 
 datos_usuario *
 consultarusuario_1_svc(int *argp, struct svc_req *rqstp)
 {
-	static datos_usuario  result;
+    static datos_usuario result;
 
-	printf("Es estan consultando los datos de: %d \n", argp);
-	if(datos.id == *argp)
-	{
-		printf("Se enviaron los datos... \n");
-		result = datos;
-	}
+    printf("Se están consultando los datos de: %d \n", *argp);
+    if (datos.id == *argp)
+    {
+        printf("Se enviaron los datos... \n");
+        result = datos;
+    }
 
-	return &result;
+    return &result;
 }
-
-

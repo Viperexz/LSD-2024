@@ -7,35 +7,49 @@
 #include "gestionPlctu.h"
 
 CLIENT *clnt;
-	bool_t  *result_1;
-	datos_plctu  registrar_plctu_1_arg;
-	datos_plctu  *result_2;
-	int  consultar_plctu_1_arg;
+bool_t  *result_1;
+datos_plctu  registrar_plctu_1_arg;
+datos_plctu  *result_2;
+int  consultar_plctu_1_arg;
 
-void
-gestion_dispositivos_1(char *host)
-{
 
-#ifndef	DEBUG
+
+
+
+CLIENT initClnt(char *host){
 	clnt = clnt_create (host, gestion_dispositivos, gestion_dispositivos_version, "udp");
 	if (clnt == NULL) {
 		clnt_pcreateerror (host);
 		exit (1);
 	}
-#endif	/* DEBUG */
+	return clnt
+}
 
+
+
+
+
+void registrarPlc(datos_plctu &registrar_plctu_1_arg, CLIENT clnt)
+{
 	result_1 = registrar_plctu_1(&registrar_plctu_1_arg, clnt);
-	if (result_1 == (bool_t *) NULL) {
-		clnt_perror (clnt, "call failed");
-	}
+		if (result_1 == (bool_t *) NULL) {
+			clnt_perror (clnt, "call failed");
+		}
+}
+
+void consultarPlc(int consultar_plctu_1_arg,CLIENT clnt)
+{
 	result_2 = consultar_plctu_1(&consultar_plctu_1_arg, clnt);
 	if (result_2 == (datos_plctu *) NULL) {
 		clnt_perror (clnt, "call failed");
 	}
-#ifndef	DEBUG
-	clnt_destroy (clnt);
-#endif	 /* DEBUG */
 }
+
+clntDestroy(CLIENT clnt)
+{
+	clnt_destroy (clnt);
+}
+
 
 
 int
