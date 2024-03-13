@@ -3,6 +3,37 @@
 #include "gestionUsuarios.h"
 #include <stdbool.h>
 
+CLIENT *clnt;
+	bool_t  *result_1;
+	datos_sesion  abrirsesion_1_arg;
+	datos_usuario  *result_2;
+	int  consultarusuario_1_arg;
+	int opcion;
+	int opcionInicio;
+	int id;
+	char clave[MAXDAT];
+	char usuario[MAXDAT];
+
+void initClnt(char *host){
+	clnt = clnt_create (host, gestion_usuarios, gestion_usuarios_version, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+}
+
+void abrirSesion(){
+	abrirsesion_1_arg.id=id;
+	strcpy(abrirsesion_1_arg.usuario, usuario);
+	strcpy(abrirsesion_1_arg.clave, clave);
+	result_1 = abrirsesion_1(&abrirsesion_1_arg, clnt);
+	if(result_1){
+		menuOperador();
+	} else {
+		menuUsuario();
+	}
+}
+
 void menuOperador() {
 	int opcionOperador;
 		printf("=== Menu Operador ===\n");
@@ -30,6 +61,7 @@ void menuOperador() {
 }
 
 
+
 void menuUsuario() {
 	int opcionUsuario;
 		printf("=== Menu Usuario ===\n");
@@ -51,31 +83,8 @@ void menuUsuario() {
         }
 }
 
-
-
-
-void
-gestion_usuarios_1(char *host)
-{
-	CLIENT *clnt;
-	bool_t  *result_1;
-	datos_sesion  abrirsesion_1_arg;
-	datos_usuario  *result_2;
-	int  consultarusuario_1_arg;
-	int opcion;
-	int opcionInicio;
-	int id;
-	char clave[MAXDAT];
-	char usuario[MAXDAT];
-
-#ifndef	DEBUG
-	clnt = clnt_create (host, gestion_usuarios, gestion_usuarios_version, "udp");
-	if (clnt == NULL) {
-		clnt_pcreateerror (host);
-		exit (1);
-	}
-#endif	/* DEBUG */
-
+void menuSesion() {
+	int Opcion;
 	printf("=== Menu Abrir Sesion ===\n");
 	printf("1. Abrir Sesion\n");
     printf("2. Salir\n");
@@ -95,17 +104,9 @@ gestion_usuarios_1(char *host)
                 printf("Ingrese la clave: \n");
                 scanf("%s", clave); // Leer la clave
 
-				abrirsesion_1_arg.id=id;
-				strcpy(abrirsesion_1_arg.usuario, usuario);
-				strcpy(abrirsesion_1_arg.clave, clave);
-				result_1 = abrirsesion_1(&abrirsesion_1_arg, clnt);
-				if(result_1){
-					menuOperador();
-				}
-				else
-				{
-					menuUsuario();
-				}break;
+				abrirSesion();
+
+				break;
             case 2:
                 printf("Saliendo del programa...\n");
                 exit(0);
@@ -113,12 +114,18 @@ gestion_usuarios_1(char *host)
                 printf("Opcion no valida. Intente de nuevo.\n");
                 break;
         }
+}
 
-	
-	/*if (result_1 == (bool_t *) NULL) {
-		clnt_perror (clnt, "call failed");
-	}*/
-	
+
+void
+gestion_usuarios_1(char *host)
+{
+
+#ifndef	DEBUG
+	initClnt();
+#endif	/* DEBUG */
+
+	menuSesion();
 
 	result_2 = consultarusuario_1(&consultarusuario_1_arg, clnt);
 	if (result_2 == (datos_usuario *) NULL) {

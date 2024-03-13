@@ -6,15 +6,15 @@
 
 #include "gestionPlctu.h"
 
-
-void
-gestion_dispositivos_1(char *host)
-{
-	CLIENT *clnt;
+CLIENT *clnt;
 	bool_t  *result_1;
 	datos_plctu  registrar_plctu_1_arg;
 	datos_plctu  *result_2;
 	int  consultar_plctu_1_arg;
+
+void
+gestion_dispositivos_1(char *host)
+{
 
 #ifndef	DEBUG
 	clnt = clnt_create (host, gestion_dispositivos, gestion_dispositivos_version, "udp");
