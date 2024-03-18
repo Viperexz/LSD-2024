@@ -13,13 +13,19 @@
 extern "C" {
 #endif
 
-#define MAXCAD 20
-#define MAXDAT 12
+#define MAXID 8
+#define MAXCAD 64
+#define MAXTP 3
+#define MAXNUMID 15
 
 struct datos_plctu {
-	char id_plctu[MAXDAT];
+	char id_plctu[MAXID];
 	char propietario[MAXCAD];
+	char tipo_iden[MAXTP];
+	char num_iden[MAXNUMID];
 	char direccion[MAXCAD];
+	int estrato;
+	char fecha_registro[MAXCAD];
 	int consumo;
 };
 typedef struct datos_plctu datos_plctu;

@@ -11,13 +11,24 @@ xdr_datos_plctu (XDR *xdrs, datos_plctu *objp)
 	register int32_t *buf;
 
 	int i;
-	 if (!xdr_vector (xdrs, (char *)objp->id_plctu, MAXDAT,
+	 if (!xdr_vector (xdrs, (char *)objp->id_plctu, MAXID,
 		sizeof (char), (xdrproc_t) xdr_char))
 		 return FALSE;
 	 if (!xdr_vector (xdrs, (char *)objp->propietario, MAXCAD,
 		sizeof (char), (xdrproc_t) xdr_char))
 		 return FALSE;
+	 if (!xdr_vector (xdrs, (char *)objp->tipo_iden, MAXTP,
+		sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	 if (!xdr_vector (xdrs, (char *)objp->num_iden, MAXNUMID,
+		sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
 	 if (!xdr_vector (xdrs, (char *)objp->direccion, MAXCAD,
+		sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->estrato))
+		 return FALSE;
+	 if (!xdr_vector (xdrs, (char *)objp->fecha_registro, MAXCAD,
 		sizeof (char), (xdrproc_t) xdr_char))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->consumo))

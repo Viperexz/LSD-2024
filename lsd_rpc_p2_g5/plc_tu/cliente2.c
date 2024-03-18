@@ -14,8 +14,6 @@ int  consultar_plctu_1_arg;
 
 
 
-
-
 CLIENT initClnt(char *host){
 	clnt = clnt_create (host, gestion_dispositivos, gestion_dispositivos_version, "udp");
 	if (clnt == NULL) {
@@ -24,8 +22,6 @@ CLIENT initClnt(char *host){
 	}
 	return clnt
 }
-
-
 
 
 

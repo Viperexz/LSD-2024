@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 
 #define MAX_TU 5
 
@@ -13,22 +14,69 @@ int varContador = 0;
 CLIENT *clnt;
 void *result_1;
 void notificar();
+void generar_id_plctu(int numero, char *id_plctu);
 
-bool_t *registrar_plctu_1_svc(datos_plctu *argp, struct svc_req *rqstp)
-{
+
+
+void registrarPlctuEnArchivo(struct datos_plctu *argp) {
+    FILE *archivo;
+    char nombreArchivo[MAXID + 5]; // +5 para espacio adicional y extensión .txt
+    sprintf(nombreArchivo, "%s.txt", argp->id_plctu); // Nombre del archivo es el id_plctu con extensión .txt
+   
+    archivo = fopen(nombreArchivo, "w"); // Abre el archivo en modo "escritura" (write)
+
+    if (archivo == NULL) {
+        printf("Error al abrir el archivo.\n");
+        return;
+    }
+
+    fprintf(archivo, "ID_TU: %s\n", argp->id_plctu);
+    fprintf(archivo, "Propietario: %s\n", argp->propietario);
+    fprintf(archivo, "Tipo de identificacion: %s\n", argp->tipo_iden);
+    fprintf(archivo, "Numero de identificacion: %s\n", argp->num_iden);
+    fprintf(archivo, "Direccion: %s\n", argp->direccion);
+    fprintf(archivo, "Estrato: %d\n", argp->estrato);
+    fprintf(archivo, "Fecha de registro: %s\n", argp->fecha_registro);
+    fprintf(archivo, "Consumo: %d\n", argp->consumo);
+
+    fclose(archivo);
+     printf("%d fue registrado, en un archivo.", argp->id_plctu);
+}
+
+
+
+bool_t *registrar_plctu_1_svc(datos_plctu *argp, struct svc_req *rqstp) {
     static bool_t result;
-
     printf("Se está registrando... \n");
+
+
+    //Inicializar la semilla de rand() con el tiempo actual
+    srand(time(NULL));
+
+    // Generar un número aleatorio entre 1 y 99
+    int numero_aleatorio = rand() % 99 + 1;
+
+    // Generar el ID
+    char id_plctu[MAXCAD];
+    generar_id_plctu(numero_aleatorio, id_plctu);
+
+    // Agregar el ID generado a la estructura
+    strcpy(argp->id_plctu, id_plctu);
+
     
     // Agrega mensajes para verificar los datos recibidos
     printf("ID_TU: %s\n", argp->id_plctu);
     printf("Propietario: %s\n", argp->propietario);
+    printf("Tipo de identificacion: %s\n", argp->tipo_iden);
+    printf("Numero de identificacion: %s\n", argp->num_iden);
     printf("Direccion: %s\n", argp->direccion);
+    printf("Estrato: %d\n", argp->estrato);
+    printf("Fecha de registro: %s\n", argp->fecha_registro);
+    printf("Consumo: %d\n", argp->consumo);
+    registrarPlctuEnArchivo(argp);
 
-    if (argp->id_plctu != '\0' && argp->propietario != '\0' && argp->direccion != '\0')
-    {
-        if (varContador < MAX_TU)
-        {
+    if (argp->id_plctu[0] != '\0' && argp->propietario[0] != '\0' && argp->direccion[0] != '\0') {
+        if (varContador < MAX_TU) {
             list_tu[varContador] = *argp;
             varContador++;
             result = true;
@@ -37,19 +85,14 @@ bool_t *registrar_plctu_1_svc(datos_plctu *argp, struct svc_req *rqstp)
             // Agrega mensajes para verificar el estado de varContador
             printf("Número de dispositivos registrados: %d\n", varContador);
 
-            if (varContador == MAX_TU)
-            {
+            if (varContador == MAX_TU) {
                 notificar();
             }
-        }
-        else
-        {
+        } else {
             result = false;
             printf("No se puede registrar más dispositivos... \n");
         }
-    }
-    else
-    {
+    } else {
         result = false;
         printf("Datos de registro no válidos... \n");
     }
@@ -81,9 +124,15 @@ datos_plctu *consultar_plctu_1_svc(int *argp, struct svc_req *rqstp)
             {
                 printf("Dispositivo encontrado... \n");
 
-                // Agrega mensajes para verificar otros campos si es necesario
+               // Mostrar toda la información del dispositivo
+                printf("ID: %s \n", list_tu[varCon].id_plctu);
                 printf("Propietario: %s \n", list_tu[varCon].propietario);
-                printf("Direccion: %s \n", list_tu[varCon].direccion);
+                printf("Tipo de identificación: %s \n", list_tu[varCon].tipo_iden);
+                printf("Número de identificación: %s \n", list_tu[varCon].num_iden);
+                printf("Dirección: %s \n", list_tu[varCon].direccion);
+                printf("Estrato: %d \n", list_tu[varCon].estrato);
+                printf("Fecha de registro: %s \n", list_tu[varCon].fecha_registro);
+                printf("Consumo: %d \n", list_tu[varCon].consumo);
 
                 result = list_tu[varCon];
                 return &result;
@@ -118,27 +167,6 @@ void notificar()
     }
 }
 
-/*
-void
-gestion_saa_1(char *host)
-{
-	CLIENT *clnt;
-	void  *result_1;
-	int  notificarplcmms_1_arg;
-
-#ifndef	DEBUG
-	clnt = clnt_create (host, gestion_saa, gestion_saa_version, "udp");
-	if (clnt == NULL) {
-		clnt_pcreateerror (host);
-		exit (1);
-	}
-#endif	/* DEBUG */
-/*
-	result_1 = notificarplcmms_1(&notificarplcmms_1_arg, clnt);
-	if (result_1 == (void *) NULL) {
-		clnt_perror (clnt, "call failed");
-	}
-#ifndef	DEBUG
-	clnt_destroy (clnt);
-#endif	 /* DEBUG 
-}*/
+void generar_id_plctu(int numero, char *id_plctu) {
+    sprintf(id_plctu, "plctu%02d", numero); 
+}

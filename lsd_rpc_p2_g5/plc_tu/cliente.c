@@ -19,10 +19,16 @@ CLIENT *clnt;
 
 /*Datos TU*/
 
-	char idTu[MAXDAT];
-	char propietarioTu[MAXCAD];
-	char direccionTu[MAXCAD];
-	int consumoTu=0;
+	char id_plctu[MAXDAT];
+    char propietario[MAXCAD];
+    char tipo_iden[MAXTP];
+    char num_iden[MAXNUMID];
+    char direccion[MAXCAD];
+    int estrato;
+    char fecha_registro[MAXCAD];
+    int consumo;
+     int num_leidos;
+    int dia, mes, anio;
 
 /* Cliente 2 */
 
@@ -36,6 +42,7 @@ void abrirSesion();
 void menuOperador();
 void menuUsuario();
 void menuSesion();
+void consultarPlc();
 
 
 /* Cliente 1 */
@@ -88,36 +95,42 @@ void initClnt2(char *host){
 
 void registrarPlc()
 {
-	strcpy(registrar_plctu_2_arg.id_plctu,idTu);
-	strcpy(registrar_plctu_2_arg.propietario, propietarioTu);
-	strcpy(registrar_plctu_2_arg.direccion, direccionTu);
-	registrar_plctu_2_arg.consumo = consumoTu;
+	strcpy(registrar_plctu_2_arg.id_plctu, id_plctu);
+    strcpy(registrar_plctu_2_arg.propietario, propietario);
+    strcpy(registrar_plctu_2_arg.tipo_iden, tipo_iden);
+    strcpy(registrar_plctu_2_arg.num_iden, num_iden);
+    strcpy(registrar_plctu_2_arg.direccion, direccion);
+    registrar_plctu_2_arg.estrato = estrato;
+    strcpy(registrar_plctu_2_arg.fecha_registro, fecha_registro);
+    registrar_plctu_2_arg.consumo = consumo;
 
 	result_3 = registrar_plctu_1(&registrar_plctu_2_arg, clnt2);
 		if (result_3 == (bool_t *) NULL) {
 			clnt_perror (clnt2, "call failed");
 		}
+    printf("Se registro exitosamente: \n");
 }
 
-void consultarPlc()
-{
+void consultarPlc() {
+    datos_plctu *result_4;
 
+    // Llama al método consultar_plctu_1 con consultar_plctu_2_arg y clnt2
     result_4 = consultar_plctu_1(&consultar_plctu_2_arg, clnt2);
 
-    if (result_4 == (datos_plctu *)NULL)
-    {
+    if (result_4 == (datos_plctu *)NULL) {
         clnt_perror(clnt2, "call failed");
-    }
-    else
-    {
-        // Imprime la información obtenida
-        printf("ID_TU: %s \n", result_4->id_plctu);
-        printf("Propietario: %s \n", result_4->propietario);
-        printf("Direccion: %s \n", result_4->direccion);
+    } else {
+        // Imprime toda la información obtenida del dispositivo consultado
+        printf("ID: %s\n", result_4->id_plctu);
+        printf("Propietario: %s\n", result_4->propietario);
+        printf("Tipo de identificacion: %s\n", result_4->tipo_iden);
+        printf("Numero de identificacion: %s\n", result_4->num_iden);
+        printf("Direccion: %s\n", result_4->direccion);
+        printf("Estrato: %d\n", result_4->estrato);
+        printf("Fecha de registro: %s\n", result_4->fecha_registro);
+        printf("Consumo: %d\n", result_4->consumo);
     }
 }
-
-
 
 
 
@@ -144,12 +157,39 @@ void menuOperador() {
 
         switch (opcionOperador) {
             case 1:
-                printf("Ingrese ID_TU: \n");
-                scanf("%s", idTu);  // Usar scanf para leer una cadena
+                getchar(); // Para consumir el '\n' pendiente en el búfer del teclado
                 printf("Ingrese el nombre del Propietario: \n");
-                scanf("%s", propietarioTu);
+                fgets(propietario, sizeof(propietario), stdin);
+                propietario[strcspn(propietario, "\n")] = '\0'; 
+                printf("Ingrese el tipo de identificacion: \n");
+                fgets(tipo_iden, sizeof(tipo_iden), stdin);
+                tipo_iden[strcspn(tipo_iden, "\n")] = '\0'; 
+                getchar(); 
+                printf("Ingrese el numero de identificacion: \n");
+                fgets(num_iden, sizeof(num_iden), stdin);
+                num_iden[strcspn(num_iden, "\n")] = '\0'; 
                 printf("Ingrese la direccion: \n");
-                scanf("%s", direccionTu);
+                fgets(direccion, sizeof(direccion), stdin);
+                direccion[strcspn(direccion, "\n")] = '\0'; 
+               do {
+                    printf("Ingrese el estrato (valores válidos: 1 a 5): \n");
+                    scanf("%d", &estrato);
+
+                    if (estrato < 1 || estrato > 5) {
+                        printf("El estrato ingresado no es válido. Por favor, ingrese un valor dentro del rango especificado.\n");
+                    }
+                } while (estrato < 1 || estrato > 5);
+                 do {
+                    printf("Ingrese la fecha de registro en formato dd-mm-aaaa: \n");
+                    num_leidos = scanf("%d-%d-%d", &dia, &mes, &anio);
+                    if (num_leidos != 3) {
+                        printf("Formato de fecha incorrecto. Por favor, ingrese la fecha en formato dd-mm-aaaa.\n");
+                        while (getchar() != '\n'); // Limpiar el búfer de entrada
+                    }
+                } while (num_leidos != 3);
+                sprintf(fecha_registro, "%02d-%02d-%04d", dia, mes, anio);
+                printf("Ingrese el consumo: \n");
+                scanf("%d", &consumo);
                 registrarPlc();
                 break;
             case 2:
@@ -184,7 +224,7 @@ void menuUsuario() {
 		scanf("%d", &opcionUsuario);
 		switch(opcionUsuario) {
             case 1:
-                 printf("Ingrese ID_TU: \n");
+                printf("Ingrese ID_TU: \n");
                 scanf("%d", &consultar_plctu_2_arg); // Leer el ID
                 consultarPlc();
 				break;

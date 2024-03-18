@@ -1,14 +1,22 @@
 /*Declaración de datos a transferir entre el plc_tu y el plc_mms*/
 /*Declaración de constantes*/
-const MAXCAD = 20;
-const MAXDAT = 12;
+const MAXID = 8;
+const MAXCAD = 64;
+const MAXTP = 3;
+const MAXNUMID = 15;
+
+
 /*Declaración de la estructura que permite almacenar los datos de un 
 plc_tu*/
 struct datos_plctu{
-char id_plctu[MAXDAT];
- char propietario[MAXCAD];
- char direccion[MAXCAD];
-int consumo;
+    char id_plctu[MAXID];
+    char propietario[MAXCAD];
+    char tipo_iden[MAXTP];
+    char num_iden[MAXNUMID];
+    char direccion[MAXCAD];
+    int estrato;
+    char fecha_registro[MAXCAD];
+    int consumo;
 };
 /*Definición de las operaciones que se pueden realizar*/
 program gestion_dispositivos{
