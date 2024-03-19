@@ -85,9 +85,9 @@ bool_t *registrar_plctu_1_svc(datos_plctu *argp, struct svc_req *rqstp) {
 
             // Agrega mensajes para verificar el estado de varContador
             printf("Número de dispositivos registrados: %d\n", varContador);
-
+                notificar(01,numero_aleatorio);
             if (varContador == MAX_TU) {
-                notificar();
+                printf("Se registraron el maximo de dispositivos: %d\n", varContador);
             }
         } else {
             result = false;
@@ -159,9 +159,9 @@ void initClnt()
     }
 }
 
-void notificar()
+void notificar(int idMMS , int idTU)
 {
-    int notificarplcmms_1_arg = 01; // Define el valor que deseas enviar como argumento
+    int notificarplcmms_1_arg = conCaInt(idMMS,idTU);
     initClnt();
     result_1 = notificarplcmms_1(&notificarplcmms_1_arg, clnt);
     if (result_1 == (void *)NULL)
@@ -172,4 +172,17 @@ void notificar()
 
 void generar_id_plctu(int numero, char *id_plctu) {
     sprintf(id_plctu, "plctu%02d", numero); 
+}
+
+int conCaInt(int prmV1 , int prmV2)
+{
+
+    char varNum1 [20];
+    char varNum2 [20];
+
+    sprintf(varNum1, "%d",prmV1);
+    sprintf(varNum2, "%d",prmV2);
+    strcat(varNum1,varNum2);
+    return atoi(varNum1);
+
 }
