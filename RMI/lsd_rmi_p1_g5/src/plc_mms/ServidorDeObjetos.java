@@ -5,8 +5,9 @@
  */
 package plc_mms;
 
-import servidor.utilidades.UtilidadesRegistroS;
-import servidor.utilidades.UtilidadesConsola;
+import plc_mms.sop_rmi.GestionUsuariosImpl;
+import plc_mms.utilidades.UtilidadesRegistroS;
+import plc_mms.utilidades.UtilidadesConsola;
 import java.rmi.RemoteException;
 import sop_rmi.AdivinadorImpl;
 
@@ -21,12 +22,12 @@ public class ServidorDeObjetos {
         System.out.println("Cual es el nUmero de puerto por el cual escucha el rmiregistry ");
         numPuertoRMIRegistry = UtilidadesConsola.leerEntero();
 
-        AdivinadorImpl objRemoto = new AdivinadorImpl();// se leasigna el puerto de escucha del objeto remoto
+        GestionUsuariosImpl objRemoto = new GestionUsuariosImpl();// se leasigna el puerto de escucha del objeto remoto
 
         try {
             UtilidadesRegistroS.arrancarNS(numPuertoRMIRegistry);
             UtilidadesRegistroS.RegistrarObjetoRemoto(objRemoto, direccionIpRMIRegistry, numPuertoRMIRegistry,
-                    "adivinador");
+                    "GesUsuarios");
 
         } catch (Exception e) {
             System.err.println("No fue posible Arrancar el NS o Registrar el objeto remoto" + e.getMessage());
