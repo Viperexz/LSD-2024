@@ -29,20 +29,19 @@ public class UtilidadesRegistroS {
 
     }
 
-    public static void RegistrarObjetoRemoto(Remote objetoRemoto, String dirIPNS, int numPuertoNS,
-            String identificadorObjetoRemoto) {
-        String UrlRegistro = "rmi://" + dirIPNS + ":" + numPuertoNS + "/" + identificadorObjetoRemoto;
+    public static Remote obtenerObjRemoto(String dirIPNS, int puertoNS, String identificadorObjetoRemoto) {
+        Remote objetoObtenido = null;
+        String URLRegistro = "rmi://" + dirIPNS + ":" + puertoNS + "/" + identificadorObjetoRemoto;
         try {
-            Naming.rebind(UrlRegistro, objetoRemoto);
-            System.out.println("Se realizó el registro del objeto remoto en el ns ubicado en la dirección: " + dirIPNS
-                    + " y " + "puerto" + numPuertoNS);
-        } catch (RemoteException e) {
-            System.out.println("Error en el registro del objeto remoto");
-
+            objetoObtenido = Naming.lookup(URLRegistro);
+        } catch (NotBoundException e) {
+            System.out.println("Error, objeto remoto no localizado");
         } catch (MalformedURLException e) {
             System.out.println("Error, url inválida");
+        } catch (RemoteException e) {
+            System.out.println("Excepcion en obtencion del objeto remoto" + e);
         }
-
+        return objetoObtenido;
     }
 
 }

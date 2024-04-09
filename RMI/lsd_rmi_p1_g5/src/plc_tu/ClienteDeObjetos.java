@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 
 public class ClienteDeObjetos {
 
-    private static AdivinadorInt objRemoto;
+    private static GesUsuario objRemoto;
 
     public static void main(String[] args) {
         int numPuertoRMIRegistry = 0;
@@ -24,79 +24,113 @@ public class ClienteDeObjetos {
         numPuertoRMIRegistry = cliente.utilidades.UtilidadesConsola.leerEntero();
 
         objRemoto = (AdivinadorInt) UtilidadesRegistroC.obtenerObjRemoto(direccionIpRMIRegistry, numPuertoRMIRegistry,
-                "adivinador");
+                "GesUsuario");
         juegoCliente();
 
     }
 
-    private static void juegoCliente() {
-        int cont_i = 0;
-        int bandera = 1;
-        int nivel = 1;
-        int numero = 0;
-        int res = 0;
-        int[] intentos;
-        String linea = "";
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        try {
+    private static void menuSesion() {
+        int opcion;
+        String password;
+        String user;
+        int ID;
+        Usuario_DTO usuario;
 
-            while (cont_i != 3 && nivel != 4) {
-                limpiar();
-                if (bandera == 1) {
-                    objRemoto.generarAleatorio(nivel);
-                    objRemoto.resetAdivinador();
-                    bandera = 0;
-                }
-                System.out.println("===== Nivel: " + nivel + " =====\n");
-                String rango = "";
-                if (nivel == 1)
-                    rango = "(0-5)";
-                if (nivel == 2)
-                    rango = "(0-15)";
-                if (nivel == 3)
-                    rango = "(0-25)";
-                System.out.print("Digite un numero(" + rango + ": ");
-                numero = UtilidadesConsola.leerEntero();
-                res = objRemoto.evaluarNumero(numero);
-                if (res == 0) {
-                    System.out.println("\nAdivinaste!!");
-                    nivel++;
-                    if (nivel == 4)
-                        System.out.println("Ganaste!!");
-                    else
-                        System.out.println("\nAvanza al nivel " + nivel + "!!");
-                    bandera = 1;
-                    cont_i = 0;
-                } else {
-                    cont_i++;
-                    System.out.println("\nFallaste!! ");
-                    if (res == 1) {
-                        System.out.println("\nEl numero es menor!!");
-                    } else {
-                        System.out.println("\nEl numero es mayor!!");
+        System.out.println("=== Menu Sesion ===");
+        System.out.println("1. Abrir Sesion");
+        System.out.println("2. Salir");
+        System.out.println("");
+
+        while(true) {
+            System.out.println("Digite una opcion:");
+            opcion = UtilidadesConsola.leerEntero();
+
+            switch(opcion) {
+                case 1:
+                    System.out.println("Ingrese las credenciales");
+                    System.out.println("");
+                    System.out.println("ID:");
+                    ID = UtilidadesConsola.leerEntero();
+                    System.out.println("User:");
+                    user = UtilidadesConsola.leerCadena();
+                    System.out.println("Password:");
+                    password = UtilidadesConsola.leerCadena();
+                    usuario.setId(ID);
+                    usuario.setUsuario(user);
+                    usuario.setClave(password);
+                    if (objRemoto.abrirSesion(usuario)) {
+                        menuOperador();
                     }
-                    int i = 3 - cont_i;
-                    if (i != 0)
-                        System.out.println("Tienes " + i + " oportunidades más");
-                }
-                System.out.println("Oprima una tecla para continuar");
-                linea = UtilidadesConsola.leerCadena();
-                // limpiar();
+                    else {
+                        menuUsuario();
+                    }
+                    break;
+                    
+                case 2:
+                    System.out.println("Saliendo...");
+                    System.exit(0); // Terminar el programa
+                    break;
+                default:
+                    System.out.println("El número ingresado no está en las opciones");
+                    break;
             }
-            if (cont_i == 3) {
-                System.out.println("======== Perdiste!! ========");
-                System.out.print("Intentos realizados: ");
-                intentos = objRemoto.getIntentos();
-                for (int i = 0; i < 3; i++) {
-                    System.out.print(intentos[i] + ",");
-                }
-                System.out.println("\n===========================");
+        }
+    }
+
+    private static void menuOperador() {
+        int opcion;
+
+        System.out.println("=== Menu Operador ===");
+        System.out.println("1. Registrar Dispositivo");
+        System.out.println("2. Consultar Dispositivo");
+        System.out.println("3. Salir");
+        System.out.println("");
+        while(true) {
+            System.out.println("Digite una opcion:");
+            opcion = UtilidadesConsola.leerEntero();
+
+            switch(opcion) {
+                case 1:
+                    System.out.println("En construccion");
+                    break;
+                case 2:
+                    System.out.println("En construccion");
+                    break;
+                case 3:
+                    System.out.println("Saliendo...");
+                    System.exit(0); // Terminar el programa
+                    break;
+                default:
+                    System.out.println("El número ingresado no está en las opciones");
+                    break;
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Error2:");
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.out.println("Client exception:" + e);
+        }
+    }
+
+    private static void menuUsuario() {
+        int opcion;
+
+        System.out.println("=== Menu Usuario ===");
+        System.out.println("1. Consultar Dispositivo");
+        System.out.println("2. Salir");
+        System.out.println("");
+        
+        while(true) {
+            System.out.println("Digite una opcion:");
+            opcion = UtilidadesConsola.leerEntero();
+
+            switch(opcion) {
+                case 1:
+                    System.out.println("En construccion");
+                    break;
+                case 2:
+                    System.out.println("Saliendo...");
+                    System.exit(0); // Terminar el programa
+                    break;
+                default:
+                    System.out.println("El número ingresado no está en las opciones");
+                    break;
+            }
         }
     }
 
