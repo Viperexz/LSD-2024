@@ -9,7 +9,7 @@ import plc_mms.sop_rmi.GestionUsuariosImpl;
 import plc_mms.utilidades.UtilidadesRegistroS;
 import plc_mms.utilidades.UtilidadesConsola;
 import java.rmi.RemoteException;
-import sop_rmi.AdivinadorImpl;
+import plc_mms.sop_rmi.GestionUsuariosImpl;
 
 public class ServidorDeObjetos {
     public static void main(String args[]) throws RemoteException {
