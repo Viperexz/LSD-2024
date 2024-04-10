@@ -6,17 +6,13 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class GestionUsuariosImpl extends UnicastRemoteObject implements GestionUsuariosInt {
-    private Usuario_DTO usuario;
+    private Usuario_DTO usuario = new Usuario_DTO(0,"Juanito Perez","adminoper","adminoper");
     private int sesionOPER;
 
 
 
     public GestionUsuariosImpl() throws RemoteException
     {
-        usuario.setId(0);
-        usuario.setUsuario("adminoper");
-        usuario.setClave("adminoper");
-        usuario.setNombreCompleto("Juanito Perez");
         System.out.println("En GestionUsuariosImpl()");
     }
 
