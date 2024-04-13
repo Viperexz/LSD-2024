@@ -11,6 +11,7 @@ public class GestionUsuariosImpl extends UnicastRemoteObject implements GestionU
 
 
 
+
     public GestionUsuariosImpl() throws RemoteException
     {
         System.out.println("En GestionUsuariosImpl()");
@@ -45,5 +46,10 @@ public class GestionUsuariosImpl extends UnicastRemoteObject implements GestionU
         if(obj.getId()==usuario.getId() && obj.getUsuario() .equals(usuario.getUsuario()) && obj.getClave().equals(usuario.getClave()))
             return 1;
         return 0;
+    }
+
+    void registrarDispositivo()
+    {
+
     }
 }
