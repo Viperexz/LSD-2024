@@ -17,7 +17,7 @@ public class GestionPlcMmsIntImpl extends UnicastRemoteObject implements Gestion
     }
 
     @Override
-    public void notificacionmms(int mmsid) {
+    public void notificacionmms(int mmsid)throws RemoteException {
         System.out.println("El dispositivo PLC_MMS con Id:"+ mmsid +" completo sus registros y esta activo en el sistema");
     }
 }

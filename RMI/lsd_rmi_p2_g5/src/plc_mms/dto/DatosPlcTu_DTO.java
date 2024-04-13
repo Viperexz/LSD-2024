@@ -1,6 +1,8 @@
 package plc_mms.dto;
 
-public class DatosPlcTu_DTO {
+import java.io.Serializable;
+
+public class DatosPlcTu_DTO implements Serializable  {
     String id_plctu;
     String propietario;
     String direccion;

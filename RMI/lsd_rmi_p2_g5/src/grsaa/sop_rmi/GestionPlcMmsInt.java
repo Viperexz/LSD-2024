@@ -8,6 +8,6 @@ import java.rmi.RemoteException;
 //Hereda de la clase Remote, lo cual la convierte en interfaz remota
 public interface GestionPlcMmsInt extends Remote {
     // Definicion del primer método remoto
-    public void notificacionmms(int mmsid);
+    public void notificacionmms(int mmsid)throws RemoteException;
     // Definicion del segundo método remoto
 }
