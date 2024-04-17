@@ -99,10 +99,30 @@ public class ClienteDeObjetos {
                         direccion = UtilidadesConsola.leerCadena("Ingrese el Direccion: ");
                         propietario = UtilidadesConsola.leerCadena("Ingrese el Propeitario : ");
                         datosTu = new DatosPlcTu_DTO(consumo,direccion,propietario,id_plctu);
-                        objRemoto2.registrar_plctu(datosTu);
+                        if(objRemoto2.registrar_plctu(datosTu))
+                        {
+                            System.out.println("Dispositivo registrado");
+                        }
+                        else
+                        {
+                            System.out.println("Error al registrar el dispositivo");
+                        }
                         break;
                     case 2:
-                        System.out.println("En construccion");
+                        String ConsultaID = UtilidadesConsola.leerCadena("Ingrese el ID: ");
+                        DatosPlcTu_DTO recuperado = objRemoto2.consultarplctu(Integer.parseInt(ConsultaID));
+
+                        if( recuperado != null)      {
+                            System.out.println("ID: " + recuperado.getId_plctu());
+                            System.out.println("Direccion: "+recuperado.getDireccion());
+                            System.out.println("Propietario: "+recuperado.getPropietario());
+                            System.out.println("Consumo: "+recuperado.getConsumo());
+                        }
+                        else
+                        {
+                            System.out.println("Inexistente");
+                        }
+
                         break;
                     case 3:
                         System.out.println("Saliendo...");

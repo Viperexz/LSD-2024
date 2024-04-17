@@ -1,3 +1,3 @@
 # shellcheck disable=SC2164
-cd bin
+cd bin/
 java plc_tu.ClienteDeObjetos
