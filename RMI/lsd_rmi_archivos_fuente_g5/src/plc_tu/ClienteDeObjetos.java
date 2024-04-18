@@ -107,11 +107,15 @@ public class ClienteDeObjetos {
                 switch(opcion) {
                     case 1:
                         System.out.println("=== Registro PLC_TU ===");
-                        tipoIden = UtilidadesConsola.leerCadena("Tipo Identificacion: ");
-                        id_plctu = UtilidadesConsola.leerCadena("Ingrese el ID: ");
-                        direccion = UtilidadesConsola.leerCadena("Ingrese el Direccion: ");
                         propietario = UtilidadesConsola.leerCadena("Ingrese el Propeitario : ");
-                        datosTu = new DatosPlcTu_DTO(propietario,);
+                        tipoIden = UtilidadesConsola.leerCadena("Tipo Identificacion: ");
+                        numIden = UtilidadesConsola.leerCadena("Ingrese el numero de identificacion: ");
+                        direccion = UtilidadesConsola.leerCadena("Ingrese el Direccion: ");
+                        estrato = UtilidadesConsola.leerCadena("Ingrese el estrato: ");
+                        fechaRegistro = UtilidadesConsola.leerCadena("Ingrese el fecha de registro: ");
+                        lecturaActual = "0";
+                        lecturaAnterior = "0";
+                        datosTu = new DatosPlcTu_DTO(propietario,"00",tipoIden,numIden,direccion,estrato,lecturaActual,consumo,lecturaAnterior,fechaRegistro);
                         if(objRemoto2.registrar_plctu(datosTu))
                         {
                             System.out.println("Dispositivo registrado");
