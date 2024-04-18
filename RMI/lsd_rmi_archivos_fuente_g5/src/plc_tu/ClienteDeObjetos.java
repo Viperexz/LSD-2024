@@ -79,10 +79,22 @@ public class ClienteDeObjetos {
 
     private static void menuOperador() throws RemoteException {
         int opcion = 0;
+
+
+        //Datos DTO...
+
         String id_plctu;
         String propietario;
+        String tipoIden;
+        String numIden;
         String direccion;
+        String estrato;
+        String fechaRegistro;
+        String lecturaActual;
+        String lecturaAnterior;
         int consumo = 0;
+
+
         DatosPlcTu_DTO datosTu;
         do{
             System.out.println("=== Menu Operador ===");
@@ -95,10 +107,11 @@ public class ClienteDeObjetos {
                 switch(opcion) {
                     case 1:
                         System.out.println("=== Registro PLC_TU ===");
+                        tipoIden = UtilidadesConsola.leerCadena("Tipo Identificacion: ");
                         id_plctu = UtilidadesConsola.leerCadena("Ingrese el ID: ");
                         direccion = UtilidadesConsola.leerCadena("Ingrese el Direccion: ");
                         propietario = UtilidadesConsola.leerCadena("Ingrese el Propeitario : ");
-                        datosTu = new DatosPlcTu_DTO(consumo,direccion,propietario,id_plctu);
+                        datosTu = new DatosPlcTu_DTO(propietario,);
                         if(objRemoto2.registrar_plctu(datosTu))
                         {
                             System.out.println("Dispositivo registrado");

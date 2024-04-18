@@ -18,7 +18,7 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
     public GestionPlcTuImpl(String ip, int puerto) throws RemoteException {
 
         System.out.println("En GestionPlcTuImpl()");
-        plcTuId = generarNumeroAleatorio();
+        plcTuId = generarNumeroAleatorio(1);
         System.out.println("El PLC Tu ID: " + plcTuId);
 
         objRemoto = (GestionPlcMmsInt) UtilidadesRegistroS.obtenerObjRemoto(ip, puerto, "GesPlcMms");
