@@ -18,7 +18,7 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
     public GestionPlcTuImpl(String ip, int puerto) throws RemoteException {
 
         System.out.println("En GestionPlcTuImpl()");
-        plcTuId = generarNumeroAleatorio();
+        plcTuId = generarNumeroAleatorio(1);
         System.out.println("El PLC Tu ID: " + plcTuId);
 
         objRemoto = (GestionPlcMmsInt) UtilidadesRegistroS.obtenerObjRemoto(ip, puerto, "GesPlcMms");
@@ -65,17 +65,23 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
 
 
 
-    private String generarNumeroAleatorio() {
+    private String generarNumeroAleatorio(int prmMode) {
         // Crear un objeto Random
         Random rand = new Random();
-
+        String numeroFormateado;
         // Generar un número aleatorio entre 0 y 99
         int numero = rand.nextInt(100);
-
+        if(prmMode == 1) {
+             numeroFormateado= String.format("plc_tu%02d", numero);
+            return numeroFormateado;
+        }
+        if(prmMode == 2) {
+             numeroFormateado = String.format("plc_mms%02d", numero);
+            return numeroFormateado;
+        }
         // Formatear el número como una cadena de dos dígitos
-        String numeroFormateado = String.format("%02d", numero);
+        return null;
 
-        return numeroFormateado;
     }
 
 }
