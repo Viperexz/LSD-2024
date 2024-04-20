@@ -1,5 +1,6 @@
 package plc_tu;
 
+import plc_mms.dto.Usuario_DTO;
 import plc_mms.sop_rmi.GestionPlcTuInt;
 import plc_mms.sop_rmi.GestionUsuariosInt;
 import plc_tu.utilidades.UtilidadesRegistroS;
@@ -8,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 
 public class Login extends JFrame {
     private JTextField txtUsuario;
@@ -15,7 +17,7 @@ public class Login extends JFrame {
     private JTextField txtClave;
     private JTextField txtID;
     private JPanel LoginPane;
-    private static GestionUsuariosInt objRemoto;
+    Usuario_DTO usuario = null;
 
     public Login(GestionUsuariosInt objUsuario, GestionPlcTuInt objPLC) {
         setContentPane(LoginPane);
@@ -28,9 +30,21 @@ public class Login extends JFrame {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                usuario = new Usuario_DTO(Integer.parseInt(txtID.getText()), "", txtUsuario.getText(), txtClave.getText());
+                try {
+                    if (objUsuario.abrirSesion(usuario) == 1) {
+                        dispose();
+                        new menuOperador();
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                null, "Error al enviar la informacion", "Error remoto", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
+
     }
 
 

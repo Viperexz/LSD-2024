@@ -34,10 +34,19 @@ public class DatosConexion extends JFrame {
                             "GesUsuario");
                     objRemoto2 = (GestionPlcTuInt) UtilidadesRegistroS.obtenerObjRemoto(txtDireccion.getText(), Integer.parseInt(txtPuerto.getText()),
                             "GesPlctu");
-                    new Login(objRemoto, objRemoto2);
+                    if (objRemoto != null && objRemoto2 != null) {
+                        new Login(objRemoto, objRemoto2);
+                        dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Error remoto", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                } catch (RemoteException rex) {
+                    JOptionPane.showMessageDialog(
+                            null, rex, "Error remoto", JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(
-                            null, ex, "Error al conectar", JOptionPane.ERROR_MESSAGE);
+                            null, ex, "Error desconocido", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

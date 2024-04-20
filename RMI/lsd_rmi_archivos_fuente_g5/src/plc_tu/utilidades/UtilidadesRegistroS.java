@@ -30,17 +30,20 @@ public class UtilidadesRegistroS {
 
     }
 
-    public static Remote obtenerObjRemoto(String dirIPNS, int puertoNS, String identificadorObjetoRemoto) {
+    public static Remote obtenerObjRemoto(String dirIPNS, int puertoNS, String identificadorObjetoRemoto) throws RemoteException {
         Remote objetoObtenido = null;
         String URLRegistro = "rmi://" + dirIPNS + ":" + puertoNS + "/" + identificadorObjetoRemoto;
         try {
             objetoObtenido = Naming.lookup(URLRegistro);
         } catch (NotBoundException e) {
             System.out.println("Error, objeto remoto no localizado");
+            return objetoObtenido;
         } catch (MalformedURLException e) {
             System.out.println("Error, url inválida");
+            return objetoObtenido;
         } catch (RemoteException e) {
             System.out.println("Excepcion en obtencion del objeto remoto" + e);
+            return objetoObtenido;
         }
         return objetoObtenido;
     }
