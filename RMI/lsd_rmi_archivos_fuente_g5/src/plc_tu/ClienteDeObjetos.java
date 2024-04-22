@@ -90,8 +90,7 @@ public class ClienteDeObjetos {
         String direccion;
         String estrato;
         String fechaRegistro;
-        String lecturaActual;
-        String lecturaAnterior;
+        int lecturaActual = 0;
         int consumo = 0;
 
 
@@ -113,9 +112,7 @@ public class ClienteDeObjetos {
                         direccion = UtilidadesConsola.leerCadena("Ingrese el Direccion: ");
                         estrato = UtilidadesConsola.leerCadena("Ingrese el estrato: ");
                         fechaRegistro = UtilidadesConsola.leerCadena("Ingrese el fecha de registro: ");
-                        lecturaActual = "0";
-                        lecturaAnterior = "0";
-                        datosTu = new DatosPlcTu_DTO(propietario,"00",tipoIden,numIden,direccion,estrato,lecturaActual,consumo,lecturaAnterior,fechaRegistro);
+                        datosTu = new DatosPlcTu_DTO(propietario,"00",tipoIden,numIden,direccion,estrato,fechaRegistro,lecturaActual,consumo);
                         if(objRemoto2.registrar_plctu(datosTu))
                         {
                             System.out.println("Dispositivo registrado");

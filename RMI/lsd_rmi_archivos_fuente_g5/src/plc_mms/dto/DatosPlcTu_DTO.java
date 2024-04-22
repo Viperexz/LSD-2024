@@ -10,21 +10,19 @@ public class DatosPlcTu_DTO implements Serializable  {
     String direccion;
     String estrato;
     String fechaRegistro;
-    String lecturaActual;
-    String lecturaAnterior;
+    int lectura;
     int consumo;
 
-    public DatosPlcTu_DTO(String propietario, String id_plctu, String tipoIden, String numIden, String direccion, String estrato, String lecturaActual, int consumo, String lecturaAnterior, String fechaRegistro) {
-        this.propietario = propietario;
+    public DatosPlcTu_DTO(String id_plctu, String propietario, String tipoIden, String numIden, String direccion, String estrato, String fechaRegistro, int lectura, int consumo) {
         this.id_plctu = id_plctu;
+        this.propietario = propietario;
         this.tipoIden = tipoIden;
         this.numIden = numIden;
         this.direccion = direccion;
         this.estrato = estrato;
-        this.lecturaActual = lecturaActual;
-        this.consumo = consumo;
-        this.lecturaAnterior = lecturaAnterior;
         this.fechaRegistro = fechaRegistro;
+        this.lectura = lectura;
+        this.consumo = consumo;
     }
 
     public String getId_plctu() {
@@ -35,20 +33,20 @@ public class DatosPlcTu_DTO implements Serializable  {
         this.id_plctu = id_plctu;
     }
 
-    public String getTipoIden() {
-        return tipoIden;
-    }
-
-    public void setTipoIden(String tipoIden) {
-        this.tipoIden = tipoIden;
-    }
-
     public String getPropietario() {
         return propietario;
     }
 
     public void setPropietario(String propietario) {
         this.propietario = propietario;
+    }
+
+    public String getTipoIden() {
+        return tipoIden;
+    }
+
+    public void setTipoIden(String tipoIden) {
+        this.tipoIden = tipoIden;
     }
 
     public String getNumIden() {
@@ -67,14 +65,6 @@ public class DatosPlcTu_DTO implements Serializable  {
         this.direccion = direccion;
     }
 
-    public String getFechaRegistro() {
-        return fechaRegistro;
-    }
-
-    public void setFechaRegistro(String fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
-    }
-
     public String getEstrato() {
         return estrato;
     }
@@ -83,12 +73,20 @@ public class DatosPlcTu_DTO implements Serializable  {
         this.estrato = estrato;
     }
 
-    public String getLecturaActual() {
-        return lecturaActual;
+    public String getFechaRegistro() {
+        return fechaRegistro;
     }
 
-    public void setLecturaActual(String lecturaActual) {
-        this.lecturaActual = lecturaActual;
+    public void setFechaRegistro(String fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public int getLectura() {
+        return lectura;
+    }
+
+    public void setLectura(int lectura) {
+        this.lectura = lectura;
     }
 
     public int getConsumo() {
@@ -97,13 +95,5 @@ public class DatosPlcTu_DTO implements Serializable  {
 
     public void setConsumo(int consumo) {
         this.consumo = consumo;
-    }
-
-    public String getLecturaAnterior() {
-        return lecturaAnterior;
-    }
-
-    public void setLecturaAnterior(String lecturaAnterior) {
-        this.lecturaAnterior = lecturaAnterior;
     }
 }

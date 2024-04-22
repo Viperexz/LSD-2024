@@ -13,31 +13,35 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
 
     private final ArrayList<DatosPlcTu_DTO> listplcTu = new ArrayList<>();
     private static GestionPlcMmsInt objRemoto;
-    private final String plcTuId;
+    private final int plcTuId;
+    private boolean running = true;
+    private int numEnvioConsumos = 0;
 
     public GestionPlcTuImpl(String ip, int puerto) throws RemoteException {
 
         System.out.println("En GestionPlcTuImpl()");
-        plcTuId = generarNumeroAleatorio(1);
+        plcTuId = generarNumeroAleatorio();
         System.out.println("El PLC Tu ID: " + plcTuId);
-
         objRemoto = (GestionPlcMmsInt) UtilidadesRegistroS.obtenerObjRemoto(ip, puerto, "GesPlcMms");
-
     }
 
     @Override
     public boolean registrar_plctu(DatosPlcTu_DTO dplctu) throws RemoteException {
+        dplctu.setId_plctu(String.format("%d",generarNumeroAleatorio()));
         System.out.println("Registrando PLC_TU: " + dplctu.getId_plctu());
 
-        if (listplcTu.size() == 5) {
+        if (listplcTu.size() >= 1) {
             System.out.println("Se alcanzó el número máximo de PLC TU");
-            objRemoto.notificacionmms(Integer.parseInt(plcTuId));
+            objRemoto.notificacionmms(plcTuId,listplcTu);
+            startConsumoAleatorio();
+            iniciarLecturaPeriodica();
             return false;
         }
 
         for (DatosPlcTu_DTO plcTu : listplcTu) {
             if (plcTu.getId_plctu().equals(dplctu.getId_plctu())) {
                 System.out.println("Error al registrar: ID Repetido");
+                startConsumoAleatorio();
                 return false;
             }
         }
@@ -64,25 +68,76 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
     }
 
 
-
-    private String generarNumeroAleatorio(int prmMode) {
-        // Crear un objeto Random
+    private int generarNumeroAleatorio() {
         Random rand = new Random();
-        String numeroFormateado;
-        // Generar un número aleatorio entre 0 y 99
-        int numero = rand.nextInt(100);
-        if(prmMode == 1) {
-             numeroFormateado= String.format("plc_tu%02d", numero);
-            return numeroFormateado;
-        }
-        if(prmMode == 2) {
-             numeroFormateado = String.format("plc_mms%02d", numero);
-            return numeroFormateado;
-        }
-        // Formatear el número como una cadena de dos dígitos
-        return null;
-
+        return rand.nextInt(100);
     }
+
+
+
+
+
+
+// Hilo dedicado a la SIMULACION de consumo y el envio de informacion.
+
+
+    private void iniciarLecturaPeriodica() {
+        Thread thread = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(60000); // Esperar 400 milisegundos
+                    if(objRemoto.lectura(listplcTu)==1) break;
+                } catch (InterruptedException | RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
+
+
+
+
+
+    public void startConsumoAleatorio() {
+        Thread thread = new Thread(() -> {
+            while (running) {
+                consumoAleatorio();
+            }
+        });
+        thread.start();
+    }
+
+    public void stopConsumoAleatorio() {
+        running = false;
+    }
+
+    private void consumoAleatorio() {
+        Random rand = new Random();
+        int maxNumero = 10; // Define el rango máximo de los números aleatorios
+        while (running) {
+            synchronized (listplcTu) { // Sincronizar el acceso a la lista
+                if (!listplcTu.isEmpty()) {
+                    try {
+
+                        int indiceAleatorio = rand.nextInt(listplcTu.size()); // Selecciona un índice aleatorio
+                        DatosPlcTu_DTO plcTuAleatorio = listplcTu.get(indiceAleatorio); // Obtiene el objeto en el índice aleatorio
+                        int numero = rand.nextInt(maxNumero); // Genera un número aleatorio entre 0 y maxNumero - 1
+                        plcTuAleatorio.setLectura(plcTuAleatorio.getLectura()+numero);
+                        System.out.println("El ID:"+plcTuAleatorio.getId_plctu()+" registra una lectura de: "+plcTuAleatorio.getLectura());
+                        Thread.sleep(15000); // Espera 300 milisegundos
+                    } catch (InterruptedException e) {
+                        // Manejo de excepción si se interrumpe el hilo mientras está dormido
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
 
 }
 
