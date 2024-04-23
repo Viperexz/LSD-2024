@@ -32,6 +32,7 @@ public class ClienteDeObjetos {
         objRemoto2 = (GestionPlcTuInt) UtilidadesRegistroS.obtenerObjRemoto(direccionIpRMIRegistry, numPuertoRMIRegistry,
                 "GesPlctu");
         menuSesion();
+        objCallback = 
 
     }
 

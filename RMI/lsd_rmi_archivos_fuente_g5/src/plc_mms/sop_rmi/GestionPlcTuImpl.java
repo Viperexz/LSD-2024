@@ -2,6 +2,7 @@ package plc_mms.sop_rmi;
 
 import grsaa.sop_rmi.GestionPlcMmsInt;
 import plc_mms.dto.DatosPlcTu_DTO;
+import plc_tu.sop_rmi.UsuarioCllbckInt;
 import plc_tu.utilidades.UtilidadesRegistroS;
 
 import java.rmi.RemoteException;
@@ -12,7 +13,7 @@ import java.util.Random;
 public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcTuInt {
 
     private final ArrayList<DatosPlcTu_DTO> listplcTu = new ArrayList<>();
-    
+    private final ArrayList<UsuarioCllbckInt>  TuConectados = new ArrayList<>();
     private static GestionPlcMmsInt objRemoto;
     private final int plcTuId;
     private boolean running = true;
