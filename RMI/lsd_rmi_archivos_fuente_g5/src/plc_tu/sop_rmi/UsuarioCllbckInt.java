@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 
 public interface UsuarioCllbckInt extends Remote
 {
-    public void notificar(String mensaje, int cantidadUsuarios) throws RemoteException;
+    public void notificar(String usuario, int id) throws RemoteException;
 
 }
 
