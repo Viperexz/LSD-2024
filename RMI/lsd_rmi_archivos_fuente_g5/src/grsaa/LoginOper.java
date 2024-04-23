@@ -20,6 +20,8 @@ public class LoginOper extends JFrame {
     private JPanel LoginPane;
     Usuario_DTO usuario = null;
 
+
+
     public LoginOper(GestionPlcMmsIntImpl objUsuario) {
         setContentPane(LoginPane);
         setTitle("Login");
@@ -32,6 +34,7 @@ public class LoginOper extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 usuario = new Usuario_DTO(Integer.parseInt(txtID.getText()), "", txtUsuario.getText(), txtClave.getText());
+
             }
         });
 
