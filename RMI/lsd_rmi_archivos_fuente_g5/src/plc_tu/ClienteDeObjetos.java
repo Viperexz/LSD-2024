@@ -1,5 +1,7 @@
 package plc_tu;
 
+import plc_tu.sop_rmi.UsuarioCllbckImpl;
+import plc_tu.sop_rmi.UsuarioCllbckInt;
 import plc_tu.utilidades.UtilidadesRegistroS;
 import plc_tu.utilidades.UtilidadesConsola;
 
@@ -16,7 +18,7 @@ public class ClienteDeObjetos {
 
     private static GestionUsuariosInt objRemoto;
     private static GestionPlcTuInt objRemoto2;
-
+   private static UsuarioCllbckImpl usuarioOperador ;
 
     public static void main(String[] args) throws RemoteException {
         int numPuertoRMIRegistry = 0;
@@ -32,7 +34,8 @@ public class ClienteDeObjetos {
         objRemoto2 = (GestionPlcTuInt) UtilidadesRegistroS.obtenerObjRemoto(direccionIpRMIRegistry, numPuertoRMIRegistry,
                 "GesPlctu");
         menuSesion();
-        objCallback = 
+
+
 
     }
 
@@ -80,7 +83,8 @@ public class ClienteDeObjetos {
 
     private static void menuOperador() throws RemoteException {
         int opcion = 0;
-
+         usuarioOperador = new UsuarioCllbckImpl();
+         if(objRemoto2.registrarOperador(usuarioOperador)) System.out.println("Operador registrado. ");
 
         //Datos DTO...
 
@@ -150,7 +154,7 @@ public class ClienteDeObjetos {
         }while(opcion != 3);
     }
 
-    private static void menuUsuario() {
+    private static void menuUsuario() throws RemoteException {
         int opcion = 0;
         do{
         System.out.println("=== Menu Usuario ===");
@@ -164,7 +168,18 @@ public class ClienteDeObjetos {
 
             switch(opcion) {
                 case 1:
-                    System.out.println("En construccion");
+                    String ConsultaID = UtilidadesConsola.leerCadena("Ingrese el ID: ");
+                    DatosPlcTu_DTO recuperado = objRemoto2.consultarplctu(Integer.parseInt(ConsultaID));
+                        if( recuperado != null)      {
+                            System.out.println("ID: " + recuperado.getId_plctu());
+                            System.out.println("Direccion: "+recuperado.getDireccion());
+                            System.out.println("Propietario: "+recuperado.getPropietario());
+                            System.out.println("Consumo: "+recuperado.getConsumo());
+                        }
+                        else
+                        {
+                            System.out.println("Inexistente");
+                        }
                     break;
                 case 2:
                     System.out.println("Saliendo...");

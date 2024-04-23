@@ -2,6 +2,7 @@ package plc_mms.sop_rmi;
 
 import grsaa.sop_rmi.GestionPlcMmsInt;
 import plc_mms.dto.DatosPlcTu_DTO;
+import plc_tu.sop_rmi.UsuarioCllbckImpl;
 import plc_tu.sop_rmi.UsuarioCllbckInt;
 import plc_tu.utilidades.UtilidadesRegistroS;
 
@@ -13,7 +14,7 @@ import java.util.Random;
 public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcTuInt {
 
     private final ArrayList<DatosPlcTu_DTO> listplcTu = new ArrayList<>();
-    private final ArrayList<UsuarioCllbckInt>  TuConectados = new ArrayList<>();
+    private  UsuarioCllbckInt TuConectados;
     private static GestionPlcMmsInt objRemoto;
     private final int plcTuId;
     private boolean running = true;
@@ -61,12 +62,21 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
         for (DatosPlcTu_DTO plcTu : listplcTu) {
             if (plcTu.getId_plctu().equals(varId)) {
                 System.out.println("Plc Tu encontrado.");
+                TuConectados.notificar(plcTu.getPropietario(),plcTu.getId_plctu());
                 return plcTu;
             }
         }
 
         System.out.println("Plc Tu no encontrado.");
         return null;
+    }
+
+    @Override
+    public boolean registrarOperador(UsuarioCllbckInt usuario) throws RemoteException {
+        System.out.println("Se registro al operador.");
+        TuConectados = new UsuarioCllbckImpl();
+        TuConectados = usuario;
+        return true;
     }
 
 

@@ -12,8 +12,8 @@ public class UsuarioCllbckImpl extends UnicastRemoteObject implements UsuarioCll
     }
 
     @Override
-    public void notificar(String usuario, int id) throws RemoteException {
-        System.out.println("El usuario "+usuario+ "con id "+id+"esta realizando una consulta.");
+    public void notificar(String usuario, String id) throws RemoteException {
+        System.out.println("El usuario: "+usuario+ " con id: "+id+" esta realizando una consulta.");
     }
 
 }
