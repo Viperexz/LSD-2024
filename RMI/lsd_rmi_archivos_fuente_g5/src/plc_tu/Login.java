@@ -34,7 +34,7 @@ public class Login extends JFrame {
                 try {
                     if (objUsuario.abrirSesion(usuario) == 1) {
                         dispose();
-                        new menuOperador();
+                        new menuOperador(objPLC);
                     } else {
                         JOptionPane.showMessageDialog(
                                 null, "Error al enviar la informacion", "Error remoto", JOptionPane.ERROR_MESSAGE);

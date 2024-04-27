@@ -22,7 +22,7 @@ public class GestionPlcMmsIntImpl extends UnicastRemoteObject implements Gestion
 
     @Override
     public void notificacionmms(int mmsid,ArrayList<DatosPlcTu_DTO> listTU)throws RemoteException {
-        GestionTU = new ListTu_DTO(mmsid, listTU);
+        GestionTU = new ListTu_DTO(listTU, mmsid);
         System.out.println("El dispositivo PLC_MMS con Id:"+ mmsid +" Fue registrado y sus PLC_TU Cargados.");
     }
 
@@ -86,9 +86,11 @@ public class GestionPlcMmsIntImpl extends UnicastRemoteObject implements Gestion
     }
 
 
+    public ListTu_DTO getGestionTU() {
+        return GestionTU;
+    }
 
-
-
-
-
+    public void setGestionTU(ListTu_DTO gestionTU) {
+        GestionTU = gestionTU;
+    }
 }

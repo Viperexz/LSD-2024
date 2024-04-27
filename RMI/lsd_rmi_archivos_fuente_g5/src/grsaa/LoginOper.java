@@ -18,11 +18,9 @@ public class LoginOper extends JFrame {
     private JTextField txtClave;
     private JTextField txtID;
     private JPanel LoginPane;
-    Usuario_DTO usuario = null;
 
 
-
-    public LoginOper(GestionPlcMmsIntImpl objUsuario) {
+    public LoginOper(GestionPlcMmsIntImpl objGrsaaa) {
         setContentPane(LoginPane);
         setTitle("Login");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -33,8 +31,12 @@ public class LoginOper extends JFrame {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                usuario = new Usuario_DTO(Integer.parseInt(txtID.getText()), "", txtUsuario.getText(), txtClave.getText());
-
+                if (1 == Integer.parseInt(txtID.getText()) && txtUsuario.getText().equals("admin") && txtClave.getText().equals("admin")) {
+                    new MenuPrincipal(objGrsaaa);
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Credenciales incorrectas", "Error remoto", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -93,4 +95,5 @@ public class LoginOper extends JFrame {
     public JComponent $$$getRootComponent$$$() {
         return LoginPane;
     }
+
 }

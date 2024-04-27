@@ -35,7 +35,7 @@ public class DatosConexion extends JFrame {
                     objRemoto2 = (GestionPlcTuInt) UtilidadesRegistroS.obtenerObjRemoto(txtDireccion.getText(), Integer.parseInt(txtPuerto.getText()),
                             "GesPlctu");
                     if (objRemoto != null && objRemoto2 != null) {
-                        new Login(objRemoto, objRemoto2);
+                        new menuSesion(objRemoto, objRemoto2);
                         dispose();
                     } else {
                         JOptionPane.showMessageDialog(null, "Error remoto", "Error", JOptionPane.ERROR_MESSAGE);
