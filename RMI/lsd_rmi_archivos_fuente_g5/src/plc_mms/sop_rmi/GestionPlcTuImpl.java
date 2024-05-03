@@ -33,7 +33,7 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
         dplctu.setId_plctu(String.format("%d",generarNumeroAleatorio()));
         System.out.println("Registrando PLC_TU: " + dplctu.getId_plctu());
 
-        if (listplcTu.size() >= 1) {
+        if (listplcTu.size() > 5) {
             System.out.println("Se alcanzó el número máximo de PLC TU");
             objRemoto.notificacionmms(plcTuId,listplcTu);
             startConsumoAleatorio();
