@@ -85,6 +85,30 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
         return rand.nextInt(100);
     }
 
+    public ArrayList<DatosPlcTu_DTO> recuperarLista() throws RemoteException
+    {
+        if(!listplcTu.isEmpty())
+        {
+            System.out.println("Se envio la lista.");
+            return listplcTu;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public void actualizarLista(ArrayList<DatosPlcTu_DTO> prmListaTU) throws RemoteException
+    {
+        if(!prmListaTU.isEmpty())
+        {
+            System.out.println("Se actualizo la lista");
+          listplcTu.clear();
+          listplcTu.addAll(prmListaTU);
+        }
+    }
+
+
 
 
 
