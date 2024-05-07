@@ -24,7 +24,7 @@ public class gestionDispositivos extends JFrame {
         setContentPane(paneGestion);
         setTitle("Gestion Dispositivos");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(400, 400);
+        setSize(400, 600);
         setLocationRelativeTo(null);
         setVisible(true);
 
@@ -112,7 +112,13 @@ public class gestionDispositivos extends JFrame {
                 int rowIndex = tblDispositivos.getSelectedRow();
 
                 String id_plctu = (String) tblDispositivos.getValueAt(rowIndex, 0).toString();
-
+                if(objPLC.eliminarTU(id_plctu))
+                {
+                    JOptionPane.showMessageDialog(
+                            null, "Se elimino correctamente. ", "Eliminado", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else JOptionPane.showMessageDialog(
+                        null, "Error al eliminar. ", "Error remoto", JOptionPane.ERROR_MESSAGE);
 
 
             }

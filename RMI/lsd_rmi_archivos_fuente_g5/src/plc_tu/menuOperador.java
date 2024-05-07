@@ -24,7 +24,7 @@ public class menuOperador extends JFrame {
         setContentPane(OperadorPane);
         setTitle("Operador");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(300, 250);
+        setSize(300, 400);
         setLocationRelativeTo(null);
         setVisible(true);
         usuarioOperador = new UsuarioCllbckImpl();

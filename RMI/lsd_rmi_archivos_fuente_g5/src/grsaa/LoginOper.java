@@ -24,7 +24,7 @@ public class LoginOper extends JFrame {
         setContentPane(LoginPane);
         setTitle("Login");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(300, 250);
+        setSize(300, 300);
         setLocationRelativeTo(null);
         setVisible(true);
 

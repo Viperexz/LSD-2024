@@ -24,5 +24,7 @@ public interface GestionPlcTuInt extends Remote {
     public Factura_DTO recuperarFactura(String IdTu) throws RemoteException ;
 
     public void notificarFacturas(String IdTu) throws RemoteException ;
+
+    public boolean eliminarTU(String idTu) ;
 }
 

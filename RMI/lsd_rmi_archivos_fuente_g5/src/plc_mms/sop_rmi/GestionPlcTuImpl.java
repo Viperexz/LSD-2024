@@ -57,6 +57,19 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
         return true;
     }
 
+
+    @Override
+    public boolean eliminarTU(String idTu) {
+        // Itera a través de los elementos del ArrayList
+        for (DatosPlcTu_DTO plctu : listplcTu) {
+            if (plctu.getId_plctu().equals(idTu)) {
+                // Si el id coincide, elimina el elemento
+                listplcTu.remove(plctu);
+                return true;
+        }
+        return false;
+    }
+
     // Método para comprobar si el PLC TU ya está registrado
     private boolean plcTuRepetido(DatosPlcTu_DTO plcTu) {
         for (DatosPlcTu_DTO existingPlcTu : listplcTu) {
