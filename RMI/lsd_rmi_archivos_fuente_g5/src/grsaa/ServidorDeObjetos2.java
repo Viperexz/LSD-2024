@@ -22,7 +22,7 @@ public class ServidorDeObjetos2 {
         System.out.println("Cual es el nUmero de puerto por el cual escucha el rmiregistry ");
         numPuertoRMIRegistry = UtilidadesConsola.leerEntero();
 
-        GestionPlcMmsIntImpl objRemoto = new GestionPlcMmsIntImpl();// se leasigna el puerto de escucha del objeto remoto
+        GestionPlcMmsIntImpl objRemoto = new GestionPlcMmsIntImpl(direccionIpRMIRegistry,numPuertoRMIRegistry);// se leasigna el puerto de escucha del objeto remoto
 
         try {
             UtilidadesRegistroS.arrancarNS(numPuertoRMIRegistry);

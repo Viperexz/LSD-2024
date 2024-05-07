@@ -1,5 +1,6 @@
 package plc_mms.sop_rmi;
 
+import grsaa.dto.Factura_DTO;
 import grsaa.sop_rmi.GestionPlcMmsInt;
 import plc_mms.dto.DatosPlcTu_DTO;
 import plc_tu.sop_rmi.UsuarioCllbckImpl;
@@ -14,11 +15,11 @@ import java.util.Random;
 public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcTuInt {
 
     private final ArrayList<DatosPlcTu_DTO> listplcTu = new ArrayList<>();
-    private  UsuarioCllbckInt TuConectados;
+    private ArrayList<UsuarioCllbckInt> TuOperConectados = new ArrayList<>();
+    private ArrayList<UsuarioCllbckInt> TuClienteContectados = new ArrayList<>();
     private static GestionPlcMmsInt objRemoto;
     private final int plcTuId;
     private boolean running = true;
-    private int numEnvioConsumos = 0;
 
     public GestionPlcTuImpl(String ip, int puerto) throws RemoteException {
 
@@ -30,30 +31,48 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
 
     @Override
     public boolean registrar_plctu(DatosPlcTu_DTO dplctu) throws RemoteException {
-        dplctu.setId_plctu(String.format("%d",generarNumeroAleatorio()));
+        // Generar un ID aleatorio para el PLC TU
+        dplctu.setId_plctu(String.format("%d", generarNumeroAleatorio()));
         System.out.println("Registrando PLC_TU: " + dplctu.getId_plctu());
 
-        if (listplcTu.size() > 5) {
+        final int MAX_PLCTU = 2;
+
+        // Comprobar si se alcanzó el número máximo de PLC TU
+        if (listplcTu.size() >= MAX_PLCTU) {
             System.out.println("Se alcanzó el número máximo de PLC TU");
-            objRemoto.notificacionmms(plcTuId,listplcTu);
-            startConsumoAleatorio();
-            iniciarLecturaPeriodica();
+            notificarMaximoAlcanzado();
             return false;
         }
 
-        for (DatosPlcTu_DTO plcTu : listplcTu) {
-            if (plcTu.getId_plctu().equals(dplctu.getId_plctu())) {
-                System.out.println("Error al registrar: ID Repetido");
-                startConsumoAleatorio();
-                return false;
-            }
+        // Comprobar si el PLC TU ya está registrado
+        if (plcTuRepetido(dplctu)) {
+            System.out.println("Error al registrar: ID Repetido");
+            return false;
         }
 
         listplcTu.add(dplctu);
-        System.out.println("Plc Tu registrado, ID( " + dplctu.getId_plctu() + " )");
+        System.out.println("PLC TU registrado, ID( " + dplctu.getId_plctu() + " )");
         System.out.println("PLC TU Totales: " + listplcTu.size());
         return true;
     }
+
+    // Método para comprobar si el PLC TU ya está registrado
+    private boolean plcTuRepetido(DatosPlcTu_DTO plcTu) {
+        for (DatosPlcTu_DTO existingPlcTu : listplcTu) {
+            if (existingPlcTu.getId_plctu().equals(plcTu.getId_plctu())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void notificarMaximoAlcanzado() throws RemoteException {
+        objRemoto.notificacionmms(plcTuId, listplcTu);
+        startConsumoAleatorio();
+        iniciarLecturaPeriodica();
+    }
+
+
     @Override
     public DatosPlcTu_DTO consultarplctu(int plctuid) throws RemoteException {
         String varId = String.valueOf(plctuid);
@@ -62,7 +81,10 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
         for (DatosPlcTu_DTO plcTu : listplcTu) {
             if (plcTu.getId_plctu().equals(varId)) {
                 System.out.println("Plc Tu encontrado.");
-                TuConectados.notificar(plcTu.getPropietario(),plcTu.getId_plctu());
+                for(UsuarioCllbckInt Oper : TuOperConectados) {
+                       Oper.notificar(plcTu.getPropietario(),plcTu.getId_plctu(),1);
+                }
+
                 return plcTu;
             }
         }
@@ -74,10 +96,31 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
     @Override
     public boolean registrarOperador(UsuarioCllbckInt usuario) throws RemoteException {
         System.out.println("Se registro al operador.");
-        TuConectados = new UsuarioCllbckImpl();
-        TuConectados = usuario;
+         TuOperConectados.add( usuario);
         return true;
     }
+
+    @Override
+    public boolean usuariosConectados(UsuarioCllbckInt usuario) throws RemoteException {
+        System.out.println("Se registro al operador.");
+        TuClienteContectados.add(usuario);
+        return true;
+    }
+
+    @Override
+    public Factura_DTO recuperarFactura(String IdTu) throws RemoteException {
+        return objRemoto.recuperarFactura(IdTu);
+    }
+
+    @Override
+    public void notificarFacturas(String IdTu) throws RemoteException {
+        for (UsuarioCllbckInt Usuario : TuClienteContectados) {
+            Usuario.notificar("",IdTu,2);
+        }
+    }
+
+
+
 
 
     private int generarNumeroAleatorio() {
@@ -98,31 +141,20 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
         }
     }
 
-    public void actualizarLista(ArrayList<DatosPlcTu_DTO> prmListaTU) throws RemoteException
-    {
-        if(!prmListaTU.isEmpty())
-        {
-            System.out.println("Se actualizo la lista");
-          listplcTu.clear();
-          listplcTu.addAll(prmListaTU);
+    public synchronized void actualizarLista(ArrayList<DatosPlcTu_DTO> prmListaTU) throws RemoteException {
+        if (!prmListaTU.isEmpty()) {
+            System.out.println("Se actualizó la lista");
+            listplcTu.clear();
+            listplcTu.addAll(prmListaTU);
         }
     }
 
-
-
-
-
-
-
-// Hilo dedicado a la SIMULACION de consumo y el envio de informacion.
-
-
-    private void iniciarLecturaPeriodica() {
+    private synchronized void iniciarLecturaPeriodica() {
         Thread thread = new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(60000); // Esperar 400 milisegundos
-                    if(objRemoto.lectura(listplcTu)==1) break;
+                    Thread.sleep(60000);
+                    if (objRemoto.lectura(listplcTu) == 1) break;
                 } catch (InterruptedException | RemoteException e) {
                     e.printStackTrace();
                 }
@@ -131,11 +163,7 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
         thread.start();
     }
 
-
-
-
-
-    public void startConsumoAleatorio() {
+    public synchronized void startConsumoAleatorio() {
         Thread thread = new Thread(() -> {
             while (running) {
                 consumoAleatorio();
@@ -144,35 +172,28 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
         thread.start();
     }
 
-    public void stopConsumoAleatorio() {
+    public synchronized void stopConsumoAleatorio() {
         running = false;
     }
 
-    private void consumoAleatorio() {
+    private synchronized void consumoAleatorio() {
         Random rand = new Random();
-        int maxNumero = 10; // Define el rango máximo de los números aleatorios
+        int maxNumero = 10;
         while (running) {
-            synchronized (listplcTu) { // Sincronizar el acceso a la lista
-                if (!listplcTu.isEmpty()) {
-                    try {
-
-                        int indiceAleatorio = rand.nextInt(listplcTu.size()); // Selecciona un índice aleatorio
-                        DatosPlcTu_DTO plcTuAleatorio = listplcTu.get(indiceAleatorio); // Obtiene el objeto en el índice aleatorio
-                        int numero = rand.nextInt(maxNumero); // Genera un número aleatorio entre 0 y maxNumero - 1
-                        plcTuAleatorio.setLectura(plcTuAleatorio.getLectura()+numero);
-                        System.out.println("El ID:"+plcTuAleatorio.getId_plctu()+" registra una lectura de: "+plcTuAleatorio.getLectura());
-                        Thread.sleep(15000); // Espera 300 milisegundos
-                    } catch (InterruptedException e) {
-                        // Manejo de excepción si se interrumpe el hilo mientras está dormido
-                        e.printStackTrace();
-                    }
+            if (!listplcTu.isEmpty()) {
+                try {
+                    int indiceAleatorio = rand.nextInt(listplcTu.size());
+                    DatosPlcTu_DTO plcTuAleatorio = listplcTu.get(indiceAleatorio);
+                    int numero = rand.nextInt(maxNumero);
+                    plcTuAleatorio.setLectura(plcTuAleatorio.getLectura() + numero);
+                    System.out.println("El ID:" + plcTuAleatorio.getId_plctu() + " registra una lectura de: " + plcTuAleatorio.getLectura());
+                    Thread.sleep(15000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
     }
-
-
-
 
 
 }

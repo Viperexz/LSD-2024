@@ -19,7 +19,6 @@ public class gestionDispositivos extends JFrame {
     private JButton btnEliminar;
     private JTable tblDispositivos;
     private ArrayList<DatosPlcTu_DTO> listTU;
-    DefaultTableModel modelo;
 
     public gestionDispositivos(GestionPlcTuInt objPLC) {
         setContentPane(paneGestion);
@@ -30,7 +29,7 @@ public class gestionDispositivos extends JFrame {
         setVisible(true);
 
         // Inicializar el modelo de tabla y agregar las columnas en el constructor
-        modelo = new DefaultTableModel();
+        DefaultTableModel modelo = new DefaultTableModel();
         modelo.addColumn("ID PLC/TU");
         modelo.addColumn("Propietario");
         modelo.addColumn("Tipo de Identificación");
@@ -40,7 +39,7 @@ public class gestionDispositivos extends JFrame {
         modelo.addColumn("Fecha de Registro");
         modelo.addColumn("Lectura");
         modelo.addColumn("Consumo");
-
+        modelo.setRowCount(0);
         tblDispositivos.setModel(modelo); // Asignar el modelo de tabla a la JTable
 
         btnConsultar.addActionListener(new ActionListener() {
@@ -48,6 +47,7 @@ public class gestionDispositivos extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // Limpiar la tabla antes de agregar nuevas filas
                 modelo.setRowCount(0);
+                tblDispositivos.setModel(modelo); // Asignar el modelo de tabla a la JTable
 
                 try {
                     listTU = objPLC.recuperarLista();
@@ -109,6 +109,11 @@ public class gestionDispositivos extends JFrame {
         btnEliminar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int rowIndex = tblDispositivos.getSelectedRow();
+
+                String id_plctu = (String) tblDispositivos.getValueAt(rowIndex, 0).toString();
+
+
 
             }
         });

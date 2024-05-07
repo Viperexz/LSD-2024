@@ -83,8 +83,8 @@ public class ClienteDeObjetos {
 
     private static void menuOperador() throws RemoteException {
         int opcion = 0;
-         usuarioOperador = new UsuarioCllbckImpl();
-         if(objRemoto2.registrarOperador(usuarioOperador)) System.out.println("Operador registrado. ");
+        usuarioOperador = new UsuarioCllbckImpl();
+        if(objRemoto2.registrarOperador(usuarioOperador)) System.out.println("Operador registrado. ");
 
         //Datos DTO...
 

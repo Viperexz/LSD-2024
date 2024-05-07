@@ -18,6 +18,7 @@ public class DatosConexion extends JFrame {
     private JTextField txtPuerto;
     GestionPlcMmsIntImpl objRemoto;
 
+
     public DatosConexion() {
         setContentPane(ConexionPane);
         setTitle("Login");
@@ -31,8 +32,9 @@ public class DatosConexion extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
 
-                    objRemoto = new GestionPlcMmsIntImpl();// se leasigna el puerto de escucha del objeto remoto
+
                     UtilidadesRegistroS.arrancarNS(Integer.parseInt(txtPuerto.getText()));
+                    objRemoto = new GestionPlcMmsIntImpl(txtDireccion.getText(), Integer.parseInt(txtPuerto.getText()));// se leasigna el puerto de escucha del objeto remoto
                     UtilidadesRegistroS.RegistrarObjetoRemoto(objRemoto, txtDireccion.getText(), Integer.parseInt(txtPuerto.getText()), "GesPlcMms");
                     if (objRemoto != null) {
                         new LoginOper(objRemoto);
@@ -101,4 +103,5 @@ public class DatosConexion extends JFrame {
     public JComponent $$$getRootComponent$$$() {
         return ConexionPane;
     }
+
 }

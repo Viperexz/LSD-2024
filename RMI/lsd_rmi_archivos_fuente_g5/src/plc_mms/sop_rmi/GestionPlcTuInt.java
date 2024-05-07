@@ -1,5 +1,6 @@
 package plc_mms.sop_rmi;
 
+import grsaa.dto.Factura_DTO;
 import plc_mms.dto.DatosPlcTu_DTO;
 import plc_tu.sop_rmi.UsuarioCllbckInt;
 
@@ -18,5 +19,10 @@ public interface GestionPlcTuInt extends Remote {
 
     public void actualizarLista(ArrayList<DatosPlcTu_DTO> prmListaTU) throws RemoteException;
 
+    public boolean usuariosConectados(UsuarioCllbckInt usuario) throws RemoteException ;
+
+    public Factura_DTO recuperarFactura(String IdTu) throws RemoteException ;
+
+    public void notificarFacturas(String IdTu) throws RemoteException ;
 }
 

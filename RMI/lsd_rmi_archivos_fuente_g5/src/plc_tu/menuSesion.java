@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 
 public class menuSesion extends JFrame {
     private JButton a3SalirButton;
@@ -33,7 +34,11 @@ public class menuSesion extends JFrame {
         a2MenuUsuarioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new menuUsuario();
+                try {
+                    new menuUsuario(objPLC);
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
                 dispose();
             }
         });

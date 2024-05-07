@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="c7edb" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="c7edb" binding="panelUsuario" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="15" left="40" bottom="15" right="40"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -24,20 +24,36 @@
               <text value="MENU USUARIO"/>
             </properties>
           </component>
-          <component id="bd02d" class="javax.swing.JButton" binding="a1ConsultarConsumoButton" default-binding="true">
+          <component id="bd02d" class="javax.swing.JButton" binding="btnConsultarLista">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="1. Consultar Consumo"/>
+              <text value="1. Consultar lista PLC_TU"/>
             </properties>
           </component>
           <component id="4965" class="javax.swing.JButton" binding="a2SalirButton" default-binding="true">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="2. Salir"/>
+            </properties>
+          </component>
+          <component id="10d70" class="javax.swing.JButton" binding="btnConsultarLecutra">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="2. Consultar lectura actual"/>
+            </properties>
+          </component>
+          <component id="80348" class="javax.swing.JButton" binding="btnConsultarFactura">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="3. Consultar factura"/>
             </properties>
           </component>
         </children>

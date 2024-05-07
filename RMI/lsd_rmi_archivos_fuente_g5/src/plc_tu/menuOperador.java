@@ -1,11 +1,13 @@
 package plc_tu;
 
 import plc_mms.sop_rmi.GestionPlcTuInt;
+import plc_tu.sop_rmi.UsuarioCllbckImpl;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 
 public class menuOperador extends JFrame {
 
@@ -16,15 +18,17 @@ public class menuOperador extends JFrame {
     private JButton a3ModificarDispositivoButton;
     private JButton btnGestionar;
     private JButton a6CerrarProgramaButton;
+    private UsuarioCllbckImpl usuarioOperador;
 
-
-    public menuOperador(GestionPlcTuInt objPLC) {
+    public menuOperador(GestionPlcTuInt objPLC) throws RemoteException {
         setContentPane(OperadorPane);
         setTitle("Operador");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(300, 250);
         setLocationRelativeTo(null);
         setVisible(true);
+        usuarioOperador = new UsuarioCllbckImpl();
+        if (objPLC.registrarOperador(usuarioOperador)) System.out.println("Operador registrado. ");
 
         btnRegistrar.addActionListener(new ActionListener() {
             @Override
