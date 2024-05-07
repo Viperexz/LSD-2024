@@ -32,19 +32,37 @@ public class UtilidadesRegistroS {
 
     public static Remote obtenerObjRemoto(String dirIPNS, int puertoNS, String identificadorObjetoRemoto) throws RemoteException {
         Remote objetoObtenido = null;
+        int numIntentos = 10 , tiempoEspera = 2000 ;
+
         String URLRegistro = "rmi://" + dirIPNS + ":" + puertoNS + "/" + identificadorObjetoRemoto;
-        try {
-            objetoObtenido = Naming.lookup(URLRegistro);
-        } catch (NotBoundException e) {
-            System.out.println("Error, objeto remoto no localizado");
-            return objetoObtenido;
-        } catch (MalformedURLException e) {
-            System.out.println("Error, url inválida");
-            return objetoObtenido;
-        } catch (RemoteException e) {
-            System.out.println("Excepcion en obtencion del objeto remoto" + e);
-            return objetoObtenido;
+        int intentosRealizados = 0;
+        while (intentosRealizados < numIntentos) {
+            try {
+                objetoObtenido = Naming.lookup(URLRegistro);
+                break; // Si la búsqueda tiene éxito, salimos del bucle
+            } catch (NotBoundException e) {
+                System.out.println("Error, objeto remoto no localizado: " + e.getMessage());
+            } catch (MalformedURLException e) {
+                System.out.println("Error, URL inválida: " + e.getMessage());
+                break; // Si la URL es inválida, no tiene sentido seguir intentando
+            } catch (RemoteException e) {
+                System.out.println("Excepción en obtención del objeto remoto: " + e.getMessage());
+            }
+
+            // Esperar un tiempo antes de volver a intentar
+            try {
+                Thread.sleep(tiempoEspera);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+
+            intentosRealizados++;
         }
+
+        if (objetoObtenido == null) {
+            System.out.println("No se pudo obtener el objeto remoto después de " + numIntentos + " intentos.");
+        }
+
         return objetoObtenido;
     }
 

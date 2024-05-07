@@ -27,6 +27,7 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
         plcTuId = generarNumeroAleatorio();
         System.out.println("El PLC Tu ID: " + plcTuId);
         objRemoto = (GestionPlcMmsInt) UtilidadesRegistroS.obtenerObjRemoto(ip, puerto, "GesPlcMms");
+
     }
 
     @Override
@@ -153,7 +154,7 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
         Thread thread = new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(60000);
+                    Thread.sleep(10000);
                     if (objRemoto.lectura(listplcTu) == 1) break;
                 } catch (InterruptedException | RemoteException e) {
                     e.printStackTrace();
@@ -187,7 +188,7 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
                     int numero = rand.nextInt(maxNumero);
                     plcTuAleatorio.setLectura(plcTuAleatorio.getLectura() + numero);
                     System.out.println("El ID:" + plcTuAleatorio.getId_plctu() + " registra una lectura de: " + plcTuAleatorio.getLectura());
-                    Thread.sleep(15000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

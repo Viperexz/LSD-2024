@@ -16,14 +16,14 @@ public class GestionPlcMmsIntImpl extends UnicastRemoteObject implements Gestion
     private int sesionOPER;
     private ListTu_DTO GestionTU;
     private ArrayList<Factura_DTO> listFacturas;
-    private static GestionPlcTuInt objRemoto2;
+   // private static GestionPlcTuInt objRemoto2;
 
 
     public GestionPlcMmsIntImpl(String ip,int puerto) throws RemoteException
     {
         System.out.println("En GestionUsuariosImpl()");
         listFacturas = new ArrayList<>();
-        objRemoto2 = (GestionPlcTuInt) plc_tu.utilidades.UtilidadesRegistroS.obtenerObjRemoto(ip,puerto, "GesPlctu");
+       // objRemoto2 = (GestionPlcTuInt) plc_tu.utilidades.UtilidadesRegistroS.obtenerObjRemoto(ip,puerto, "GesPlcMms");
     }
 
     @Override
@@ -39,7 +39,7 @@ public class GestionPlcMmsIntImpl extends UnicastRemoteObject implements Gestion
         GestionTU.setListTU(listTU);
         if(varContador == GestionTU.getListTU().size()) return 1;
         for (DatosPlcTu_DTO plcTu : GestionTU.getListTU()) {
-            if(contarLineas(GestionTU.getMmsId()+"_"+plcTu.getId_plctu()+".txt")<3) {
+            if(contarLineas(GestionTU.getMmsId()+"_"+plcTu.getId_plctu()+".txt")<4) {
                 escribirArchivo(GestionTU.getMmsId(), plcTu.getId_plctu(), plcTu.getLectura());
             }
             else
@@ -77,7 +77,7 @@ public class GestionPlcMmsIntImpl extends UnicastRemoteObject implements Gestion
         }
         Factura_DTO factura = new Factura_DTO(String.valueOf(calcularConsumo(fileName,1)),prmTU.getId_plctu(),String.valueOf(calcularConsumo(fileName,2)),prmTU.getConsumo());
         System.out.println("Se calculo el consumo del TU: " + prmTU.getId_plctu() +" En un total de: " + prmTU.getConsumo());
-        objRemoto2.notificarFacturas(String.valueOf(prmTU.getId_plctu()));
+        //objRemoto2.notificarFacturas(String.valueOf(prmTU.getId_plctu()));
         listFacturas.add(factura);
     }
 
@@ -104,7 +104,7 @@ public class GestionPlcMmsIntImpl extends UnicastRemoteObject implements Gestion
         String fileName =mmsid+"_"+plc+".txt";
         System.out.println("Se esta escribiendo en el archivo: " + fileName + " Lectura: " + lectura);
         String encoding = "UTF-8";
-        if(contarLineas(fileName)<3)
+        if(contarLineas(fileName)<4)
         {
             try {
                 PrintWriter writer = new PrintWriter(new FileWriter(fileName, true)); // true para agregar al final del archivo
