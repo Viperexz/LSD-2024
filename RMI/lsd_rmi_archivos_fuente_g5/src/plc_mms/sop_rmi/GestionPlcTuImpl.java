@@ -59,13 +59,14 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
 
 
     @Override
-    public boolean eliminarTU(String idTu) {
+    public synchronized boolean eliminarTU(String idTu) throws RemoteException {
         // Itera a través de los elementos del ArrayList
         for (DatosPlcTu_DTO plctu : listplcTu) {
             if (plctu.getId_plctu().equals(idTu)) {
                 // Si el id coincide, elimina el elemento
                 listplcTu.remove(plctu);
                 return true;
+            }
         }
         return false;
     }
@@ -98,7 +99,6 @@ public class GestionPlcTuImpl extends UnicastRemoteObject implements GestionPlcT
                 for(UsuarioCllbckInt Oper : TuOperConectados) {
                        Oper.notificar(plcTu.getPropietario(),plcTu.getId_plctu(),1);
                 }
-
                 return plcTu;
             }
         }

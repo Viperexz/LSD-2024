@@ -25,6 +25,6 @@ public interface GestionPlcTuInt extends Remote {
 
     public void notificarFacturas(String IdTu) throws RemoteException ;
 
-    public boolean eliminarTU(String idTu) ;
+    public boolean eliminarTU(String idTu) throws RemoteException;
 }
 
