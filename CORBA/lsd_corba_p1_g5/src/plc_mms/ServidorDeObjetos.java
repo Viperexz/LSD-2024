@@ -33,13 +33,13 @@ public class ServidorDeObjetos
 
             System.out.println("4. Crea el objeto servant");
 
-            RegistroImpl ObjServant = new RegistroImpl();
+            GestionUsuariosImpl ObjServant = new GestionUsuariosImpl();
 
             System.out.println("5. Obtiene la referencia al objeto servant ");
             org.omg.CORBA.Object obj =
                     rootPOA.servant_to_reference(ObjServant);
             System.out.println("6. Convierte la referencia de un objeto generico a una referencia al servant ");
-            Registro href = RegistroHelper.narrow(obj);
+            GestionUsuarios href = GestionUsuariosHelper.narrow(obj);
 
             System.out.println("7. Obtiene una referencia al servicio de nombrado por medio del orb");
             org.omg.CORBA.Object objRefNameService =
