@@ -14,6 +14,73 @@ import java.rmi.RemoteException;
 
 public class ClienteDeObjetos {
 
+
+
+
+
+package cliente;
+
+import org.omg.CosNaming.*;
+import org.omg.CORBA.*;
+
+import sop_corba.*;
+import org.omg.CORBA.ORBPackage.InvalidName;
+import org.omg.CosNaming.NamingContextPackage.CannotProceed;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
+
+    public class ClienteDeObjetos
+    {
+
+        public static void main(String args[])
+        {
+            try
+            {
+                System.out.println("1. Crea e inicia el ORB");
+                ORB orb = ORB.init(args, null);
+
+                System.out.println("2. Obtiene una referencia al servicio de nombrado por medio del orb");
+                org.omg.CORBA.Object objRefNameService = orb.resolve_initial_references("NameService");
+
+                System.out.println("3. Convierte la ref genErica a ref de NamingContextExt");
+                NamingContextExt refContextoNombrado = NamingContextExtHelper.narrow(objRefNameService);
+
+                System.out.println("4. Resuelve la referencia del objeto en el N_S.");
+
+                String identificadorServant = "identificadorServant";
+
+                NameComponent [] path = new NameComponent[1];
+                path[0] = new NameComponent();
+                path[0].id = identificadorServant;
+                path[0].kind = "tipoServicio";
+
+                org.omg.CORBA.Object objRef= refContextoNombrado.resolve(path);
+
+                System.out.println("5. Convierte la referencia de un objeto genErico a una referencia al servant ");
+
+                Registro objSolucion = RegistroHelper.narrow(objRef);
+
+                System.out.println("InvocaciOn de los mEtodos como si fueran locales");
+
+                objSolucion.cantidadMaximaDepositos(3);
+                objSolucion.registrarDeposito("1", 250000);
+                objSolucion.registrarDeposito("1", 500000);
+                objSolucion.registrarDeposito("2", 1500000);
+                float saldoCuenta=objSolucion.cantidadCuenta("1");
+                System.out.println("El saldo de la cuenta para la identificacion 1 es: " + saldoCuenta );
+                int cantidadDepositos= objSolucion.cantidadDepositosRegistrados();
+                System.out.println("La cantidad de depOsitos registrados es: " + cantidadDepositos);
+
+
+            } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName | NotFound e)
+            {
+                System.out.println("ERROR : " + e.getMessage()) ;
+                e.printStackTrace(System.out);
+            }
+        }
+
+    }
+
+
     private static GestionUsuariosInt objRemoto;
 
     public static void main(String[] args) throws RemoteException {
