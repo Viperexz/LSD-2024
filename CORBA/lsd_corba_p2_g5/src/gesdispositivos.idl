@@ -1,0 +1,5 @@
+module sop_corba{
+interface GestionDispositivos{
+   void notificacionmms(in long mmsid);
+    };
+};
