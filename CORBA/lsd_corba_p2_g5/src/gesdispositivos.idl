@@ -1,5 +1,8 @@
 module sop_corba{
 interface GestionDispositivos{
-   void notificacionmms(in long mmsid);
+    struct notificacionDTO{
+    long idPlcmms;
+    };
+   void notificacionmms(in notificacionDTO objNotificacion);
     };
 };

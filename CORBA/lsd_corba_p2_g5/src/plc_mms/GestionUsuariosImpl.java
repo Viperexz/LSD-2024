@@ -10,7 +10,7 @@ public class GestionUsuariosImpl extends plc_mms.sop_corba.GestionUsuariosPOA  {
     @Override
     public int abrirSesion(usuarioDTO objUsuario) {
         System.out.println("En Inciando Sesion.. "+ objUsuario.usuario);
-        if(objUsuario.usuario.equals(varUsuario.usuario) && objUsuario.clave.equals(objUsuario.clave) ) {
+        if(objUsuario.usuario.equals(varUsuario.usuario) && objUsuario.clave.equals(varUsuario.clave) ) {
             System.out.println("Incio correctamente.. "+ objUsuario.usuario);
             return 1;
         }

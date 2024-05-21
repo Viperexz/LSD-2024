@@ -51,11 +51,7 @@ public class ServidorDeObjetos2 {
 
             System.out.println("9.Construir un contexto de nombres que identifica al servant");
             String identificadorServant = "ServGrsaa";
-
-            NameComponent[] path = new NameComponent[1];
-            path[0] = new NameComponent();
-            path[0].id = identificadorServant;
-            path[0].kind = "tipoServicio";
+            NameComponent path[] = refContextoNombrado.to_name(identificadorServant);
 
             System.out.println("10.Realiza el binding de la referencia de objeto en el N_S");
             refContextoNombrado.rebind(path, href);

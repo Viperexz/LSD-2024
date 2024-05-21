@@ -1,10 +1,11 @@
 package plc_tu;
 
+import org.omg.CORBA.Object;
 import org.omg.CosNaming.*;
 import org.omg.CORBA.*;
-
-
-import plc_mms.utilidades.UtilidadesConsola;
+import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTO;
+import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTOHolder;
+import plc_tu.utilidades.UtilidadesConsola;
 import plc_mms.sop_corba.*;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
@@ -21,7 +22,7 @@ public class ClienteDeObjetos
                 ORB orb = ORB.init(args, null);
 
                 System.out.println("2. Obtiene una referencia al servicio de nombrado por medio del orb");
-                org.omg.CORBA.Object objRefNameService = orb.resolve_initial_references("NameService");
+                Object objRefNameService = orb.resolve_initial_references("NameService");
 
                 System.out.println("3. Convierte la ref genErica a ref de NamingContextExt");
                 NamingContextExt refContextoNombrado = NamingContextExtHelper.narrow(objRefNameService);
@@ -31,23 +32,19 @@ public class ClienteDeObjetos
                 String identificadorServant = "ServUsuarios";
                 String identificadorServant1 = "ServGesTU";
 
-                NameComponent [] path = new NameComponent[1];
-                path[0] = new NameComponent();
-                path[0].id = identificadorServant;
-                path[0].kind = "tipoServicio";
+                NameComponent path[] = refContextoNombrado.to_name(identificadorServant);
+                NameComponent path1[] = refContextoNombrado.to_name(identificadorServant1);
 
-                NameComponent [] path1 = new NameComponent[1];
-                path[0] = new NameComponent();
-                path[0].id = identificadorServant1;
-                path[0].kind = "tipoServicio";
-
-                org.omg.CORBA.Object objRef= refContextoNombrado.resolve(path);
-                org.omg.CORBA.Object objRef1= refContextoNombrado.resolve(path1);
+                Object objRef= refContextoNombrado.resolve(path);
+                Object objRef1= refContextoNombrado.resolve(path1);
 
                 System.out.println("5. Convierte la referencia de un objeto genErico a una referencia al servant ");
 
                 GestionUsuarios objUsuarios = GestionUsuariosHelper.narrow(objRef);
+                System.out.println("Se obtuvo Obj usuarios");
+
                 GestionPlcTu objTu = GestionPlcTuHelper.narrow(objRef1);
+                System.out.println("Se obtuvo Obj Tu");
                 System.out.println("InvocaciOn de los metodos como si fueran locales");
 
                 menuSesion(objUsuarios,objTu);
@@ -108,6 +105,11 @@ public class ClienteDeObjetos
 
     private static void menuOperador(GestionPlcTu objTu) {
         int opcion = 0;
+        String id_plctu;
+        String propietario;
+        String direccion;
+        int consumo = 0;
+        DatosPlcTu_DTO datosTu;
         do{
             System.out.println("=== Menu Operador ===");
             System.out.println("1. Registrar Dispositivo");
@@ -118,10 +120,36 @@ public class ClienteDeObjetos
                 opcion = UtilidadesConsola.leerEntero();
                 switch(opcion) {
                     case 1:
-                        System.out.println("En construccion");
+                        System.out.println("=== Registro PLC_TU ===");
+                        id_plctu = UtilidadesConsola.leerCadena("Ingrese el ID: ");
+                        direccion = UtilidadesConsola.leerCadena("Ingrese el Direccion: ");
+                        propietario = UtilidadesConsola.leerCadena("Ingrese el Propeitario : ");
+                        datosTu = new DatosPlcTu_DTO(id_plctu,propietario,direccion,consumo);
+                        if(objTu.registrar_plctu(datosTu))
+                        {
+                            System.out.println("Dispositivo registrado");
+                        }
+                        else
+                        {
+                            System.out.println("Error al registrar el dispositivo");
+                        }
                         break;
                     case 2:
-                        System.out.println("En construccion");
+                        String ConsultaID = UtilidadesConsola.leerCadena("Ingrese el ID: ");
+                        DatosPlcTu_DTOHolder recuperado = new DatosPlcTu_DTOHolder();
+                        objTu.consultarplctu(Integer.parseInt(ConsultaID),recuperado);
+
+                        if( recuperado != null)      {
+                            System.out.println("ID: " + recuperado.value.id_plctu);
+                            System.out.println("Direccion: "+recuperado.value.direccion);
+                            System.out.println("Propietario: "+recuperado.value.propietario);
+                            System.out.println("Consumo: "+recuperado.value.consumo);
+                        }
+                        else
+                        {
+                            System.out.println("Inexistente");
+                        }
+
                         break;
                     case 3:
                         System.out.println("Saliendo...");

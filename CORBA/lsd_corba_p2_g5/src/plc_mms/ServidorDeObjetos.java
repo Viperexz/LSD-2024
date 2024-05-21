@@ -41,7 +41,7 @@ public class ServidorDeObjetos
             org.omg.CORBA.Object obj1 = rootPOA.servant_to_reference(ObjServant1);
             System.out.println("6. Convierte la referencia de un objeto generico a una referencia al servant ");
             GestionUsuarios href = GestionUsuariosHelper.narrow(obj);
-            GestionPlcTu href2 = GestionPlcTuHelper.narrow(obj1);
+            GestionPlcTu href1 = GestionPlcTuHelper.narrow(obj1);
             System.out.println("7. Obtiene una referencia al servicio de nombrado por medio del orb");
             org.omg.CORBA.Object objRefNameService =
                     orb.resolve_initial_references("NameService");
@@ -50,22 +50,18 @@ public class ServidorDeObjetos
             NamingContextExt refContextoNombrado = NamingContextExtHelper.narrow(objRefNameService);
 
             System.out.println("9.Construir un contexto de nombres que identifica al servant");
+
+            System.out.println("Realizar binding de objNotificaciones ...");
             String identificadorServant = "ServUsuarios";
+            NameComponent path[] = refContextoNombrado.to_name(identificadorServant);
             String identificadorServant1 = "ServGesTU";
+            NameComponent path1[] = refContextoNombrado.to_name(identificadorServant1);
 
-            NameComponent [] path = new NameComponent[1];
-            path[0] = new NameComponent();
-            path[0].id = identificadorServant;
-            path[0].kind = "tipoServicio";
-
-            NameComponent [] path1 = new NameComponent[1];
-            path[0] = new NameComponent();
-            path[0].id = identificadorServant1;
-            path[0].kind = "tipoServicio";
-
-            System.out.println("10.Realiza el binding de la referencia de objeto en el N_S");
             refContextoNombrado.rebind(path, href);
-            refContextoNombrado.rebind(path1, href);
+            refContextoNombrado.rebind(path1, href1);
+
+            ObjServant1.consultarReferenciaRemota(refContextoNombrado,"ServGrsaa");
+
             System.out.println("El Servidor esta listo y esperando ...");
             orb.run();
 
@@ -79,6 +75,8 @@ public class ServidorDeObjetos
             System.err.println("ERROR: " + e);
             e.printStackTrace(System.out);
         }
+
+
 
 
     }
