@@ -3,14 +3,16 @@ package plc_tu;
 import org.omg.CosNaming.*;
 import org.omg.CORBA.*;
 
+
+import plc_mms.utilidades.UtilidadesConsola;
 import sop_corba.*;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
+import sop_corba.GestionUsuariosPackage.usuarioDTO;
 
-    public class ClienteDeObjetos
+public class ClienteDeObjetos
     {
-
         public static void main(String args[])
         {
             try
@@ -37,20 +39,12 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
 
                 System.out.println("5. Convierte la referencia de un objeto genErico a una referencia al servant ");
 
-                Registro objSolucion = RegistroHelper.narrow(objRef);
+                GestionUsuarios objSolucion = GestionUsuariosHelper.narrow(objRef);
 
                 System.out.println("InvocaciOn de los mEtodos como si fueran locales");
 
-                menuSesion();
+                menuSesion(objSolucion);
 
-                objSolucion.cantidadMaximaDepositos(3);
-                objSolucion.registrarDeposito("1", 250000);
-                objSolucion.registrarDeposito("1", 500000);
-                objSolucion.registrarDeposito("2", 1500000);
-                float saldoCuenta=objSolucion.cantidadCuenta("1");
-                System.out.println("El saldo de la cuenta para la identificacion 1 es: " + saldoCuenta );
-                int cantidadDepositos= objSolucion.cantidadDepositosRegistrados();
-                System.out.println("La cantidad de depOsitos registrados es: " + cantidadDepositos);
 
 
             } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName | NotFound e)
@@ -60,32 +54,15 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
             }
         }
 
-    }
 
 
-    private static GestionUsuariosInt objRemoto;
 
-    public static void main(String[] args) {
-        int numPuertoRMIRegistry = 0;
-        String direccionIpRMIRegistry = "";
-
-        System.out.println("Cual es el la direcciOn ip donde se encuentra  el rmiregistry ");
-        direccionIpRMIRegistry = UtilidadesConsola.leerCadena("Ingrese la IP (localhost o otra): ");
-        System.out.println("Cual es el nUmero de puerto por el cual escucha el rmiregistry ");
-        numPuertoRMIRegistry = UtilidadesConsola.leerEntero();
-
-        objRemoto = (GestionUsuariosInt) UtilidadesRegistroS.obtenerObjRemoto(direccionIpRMIRegistry, numPuertoRMIRegistry,
-                "GesUsuario");
-        menuSesion();
-
-    }
-
-    private static void menuSesion() {
+    private static void menuSesion(GestionUsuarios objGestion) {
         int opcion = 0;
         String password;
         String user;
         int ID;
-        Usuario_DTO usuario = null;
+         usuarioDTO usuario = null;
         do{
         System.out.println("=== Menu Sesion ===");
         System.out.println("1. Abrir Sesion");
@@ -102,15 +79,15 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
                     ID = UtilidadesConsola.leerEntero();
                     user = UtilidadesConsola.leerCadena("Ingresar Usuario:");
                     password = UtilidadesConsola.leerCadena("Ingresar Password");
-                    usuario = new Usuario_DTO(ID,"",user,password);
-                    if (objRemoto.abrirSesion(usuario)==1) {
+                    usuario = new usuarioDTO(ID,"",user,password);
+                    if (objGestion.abrirSesion(usuario)==1) {
                         menuOperador();
                     }
                     else {
                         menuUsuario();
                     }
                     break;
-                    
+
                 case 2:
                     System.out.println("Saliendo...");
                     System.exit(0); // Terminar el programa
@@ -157,7 +134,7 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
         System.out.println("1. Consultar Dispositivo");
         System.out.println("2. Salir");
         System.out.println("");
-        
+
 
             System.out.println("Digite una opcion:");
             opcion = UtilidadesConsola.leerEntero();
@@ -176,9 +153,4 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
             }
         }while(opcion != 2);
     }
-
-    public static void limpiar() {
-        for (int i = 0; i < 20; i++) {
-            System.out.println("");
-        }
     }

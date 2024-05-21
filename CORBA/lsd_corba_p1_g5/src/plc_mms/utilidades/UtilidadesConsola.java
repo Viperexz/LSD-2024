@@ -32,7 +32,7 @@ public class UtilidadesConsola
     
     }
 	
-	public static String leerCadena()
+	public static String leerCadena(String s)
     {
     	String linea = "";
     	boolean valido = false;
