@@ -9,3 +9,5 @@ RPC -> Enfocado en C y con el uso de XDR para transferencia de informacion.
 RMI -> Enfocado en Java se maneja el paradigma DTO y los servidores de Objetos.
 
 Los codigos puede necesitar mejoras. 
+
+Si el codigo te sirvio dale una estrella. 
