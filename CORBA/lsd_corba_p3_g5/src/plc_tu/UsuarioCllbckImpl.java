@@ -1,4 +1,4 @@
-package plc_tu.sop_rmi;
+package plc_tu;
 
 import javax.swing.*;
 import java.rmi.RemoteException;
