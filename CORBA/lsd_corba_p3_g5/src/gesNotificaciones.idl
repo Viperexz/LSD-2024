@@ -5,6 +5,6 @@ interface GestionAlertas{
     long id;
     long modo;
     };
-    void notificar(in string usuario, in string id,in long modo) throws RemoteException;
+    void notificar(in string usuario, in string id,in long modo);
     };
 };
