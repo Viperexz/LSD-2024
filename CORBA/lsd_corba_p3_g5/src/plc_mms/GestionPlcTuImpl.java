@@ -10,6 +10,7 @@ import org.omg.CosNaming.NamingContextPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTO;
 import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTOHolder;
+import plc_tu.sop_corba.GestionAlertasPackage.alertaDto;
 import plc_tu.utilidades.UtilidadesRegistroS;
 
 import java.rmi.RemoteException;
@@ -21,14 +22,15 @@ public class GestionPlcTuImpl extends plc_mms.sop_corba.GestionPlcTuPOA {
     private GestionDispositivos refServant2;
     private final ArrayList<DatosPlcTu_DTO> listplcTu = new ArrayList<plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTO>();
     private String plcTuId;
-    private notificacionDTO notificacion;
+    private  plc_tu.sop_corba.GestionAlertas TuOperConectados ;
+
     @Override
     public boolean registrar_plctu (plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTO dplctu){
         System.out.println("Registrando PLC_TU: " + dplctu.id_plctu);
 
         if (listplcTu.size() == 1) {
             System.out.println("Se alcanzó el número máximo de PLC TU");
-            notificacion = new notificacionDTO(Integer.parseInt(generarNumeroAleatorio()));
+            notificacionDTO notificacion = new notificacionDTO(Integer.parseInt(generarNumeroAleatorio()));
             refServant2.notificacionmms(notificacion);
             return false;
         }
@@ -54,12 +56,25 @@ public class GestionPlcTuImpl extends plc_mms.sop_corba.GestionPlcTuPOA {
             if (plcTu.id_plctu.equals(varId)) {
                 System.out.println("Plc Tu encontrado.");
                 objTU.value =plcTu;
+
+                    System.out.println("Se notifico al operador");
+                    alertaDto objAlerta = new alertaDto(plcTu.propietario,Integer.parseInt(plcTu.id_plctu),1);
+                    System.out.println("Se crea la Alerta DTO");
+                    TuOperConectados.notificar(objAlerta);
                 return true;
             }
         }
         System.out.println("Plc Tu no encontrado.");
         return false;
     }
+
+    @Override
+    public void registrarCallback(plc_tu.sop_corba.GestionAlertas objAlertas) {
+
+        TuOperConectados = objAlertas ;
+        System.out.println("Se registro un operador.");
+    }
+
 
     public void consultarReferenciaRemota(NamingContextExt nce, String servicio)
     {

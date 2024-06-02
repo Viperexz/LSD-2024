@@ -1,3 +1,5 @@
+#include <gesalertas.idl>
+
 module sop_corba{
 interface GestionPlcTu{
     struct DatosPlcTu_DTO{
@@ -8,5 +10,6 @@ interface GestionPlcTu{
     };
     boolean registrar_plctu(in DatosPlcTu_DTO dplctu);
     boolean consultarplctu(in long plctuid, out DatosPlcTu_DTO objTU);
+    void registrarCallback(in GestionAlertas objAlertas);
     };
 };
