@@ -1,50 +1,100 @@
 package plc_tu;
 
-import plc_tu.sop_rmi.UsuarioCllbckImpl;
-import plc_tu.sop_rmi.UsuarioCllbckInt;
-import plc_tu.utilidades.UtilidadesRegistroS;
+import org.omg.CORBA.Object;
+import org.omg.CosNaming.*;
+import org.omg.CORBA.*;
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer.POAHelper;
+import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
+import org.omg.PortableServer.POAPackage.ServantNotActive;
+import org.omg.PortableServer.POAPackage.WrongPolicy;
+import plc_mms.GestionPlcTuImpl;
+import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTO;
+import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTOHolder;
+import plc_tu.sop_corba.GestionAlertas;
+import plc_tu.sop_corba.GestionAlertasHelper;
 import plc_tu.utilidades.UtilidadesConsola;
+import plc_mms.sop_corba.*;
+import org.omg.CORBA.ORBPackage.InvalidName;
+import org.omg.CosNaming.NamingContextPackage.CannotProceed;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
+import plc_mms.sop_corba.GestionUsuariosPackage.usuarioDTO;
 
-import plc_mms.sop_rmi.*;
-import plc_mms.dto.*;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
+public class ClienteDeObjetos
+    {
+        public static void main(String args[])
+        {
+            try
+            {
+                System.out.println("1. Crea e inicia el ORB");
+                ORB orb = ORB.init(args, null);
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.rmi.RemoteException;
+                System.out.println("2. Obtiene una referencia al servicio de nombrado por medio del orb");
+                Object objRefNameService = orb.resolve_initial_references("NameService");
 
-public class ClienteDeObjetos {
+                POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+                System.out.println("3. Activa el POAManager");
+                rootpoa.the_POAManager().activate();
+                System.out.println("3. Convierte la ref genErica a ref de NamingContextExt");
+                NamingContextExt refContextoNombrado = NamingContextExtHelper.narrow(objRefNameService);
 
-    private static GestionUsuariosInt objRemoto;
-    private static GestionPlcTuInt objRemoto2;
-   private static UsuarioCllbckImpl usuarioOperador ;
+                System.out.println("4. Resuelve la referencia del objeto en el N_S.");
 
-    public static void main(String[] args) throws RemoteException {
-        int numPuertoRMIRegistry = 0;
-        String direccionIpRMIRegistry = "";
+                String identificadorServant = "ServUsuarios";
+                String identificadorServant1 = "ServGesTU";
 
-        System.out.println("Cual es el la direcciOn ip donde se encuentra  el rmiregistry ");
-        direccionIpRMIRegistry = UtilidadesConsola.leerCadena("Ingrese la IP (localhost o otra): ");
-        System.out.println("Cual es el nUmero de puerto por el cual escucha el rmiregistry ");
-        numPuertoRMIRegistry = UtilidadesConsola.leerEntero();
+                NameComponent path[] = refContextoNombrado.to_name(identificadorServant);
+                NameComponent path1[] = refContextoNombrado.to_name(identificadorServant1);
 
-        objRemoto = (GestionUsuariosInt) UtilidadesRegistroS.obtenerObjRemoto(direccionIpRMIRegistry, numPuertoRMIRegistry,
-                "GesUsuario");
-        objRemoto2 = (GestionPlcTuInt) UtilidadesRegistroS.obtenerObjRemoto(direccionIpRMIRegistry, numPuertoRMIRegistry,
-                "GesPlctu");
-        menuSesion();
+                Object objRef= refContextoNombrado.resolve(path);
+                Object objRef1= refContextoNombrado.resolve(path1);
+
+                System.out.println("5. Convierte la referencia de un objeto genErico a una referencia al servant ");
+
+                GestionUsuarios objUsuarios = GestionUsuariosHelper.narrow(objRef);
+                System.out.println("Se obtuvo Obj usuarios");
 
 
 
-    }
+                GestionPlcTu objTu = GestionPlcTuHelper.narrow(objRef1);
+                System.out.println("Se obtuvo Obj Tu");
+                System.out.println("InvocaciOn de los metodos como si fueran locales");
 
-    private static void menuSesion() throws RemoteException {
+
+
+                System.out.println("7. Crea el objeto servant callback");
+                UsuarioCllbckImpl objRefCllbck = new UsuarioCllbckImpl();
+                objRefCllbck.setORB(orb);
+
+                System.out.println("8. Convierte la referencia de un objeto genErico a una referencia al servant callback");
+                Object ref = rootpoa.servant_to_reference(objRefCllbck);
+                GestionAlertas objAlertasCallback = GestionAlertasHelper.narrow(ref);
+
+                menuSesion(objUsuarios,objTu,objAlertasCallback);
+
+
+            } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName | NotFound e)
+            {
+                System.out.println("ERROR : " + e.getMessage()) ;
+                e.printStackTrace(System.out);
+            } catch (WrongPolicy e) {
+                throw new RuntimeException(e);
+            } catch (AdapterInactive e) {
+                throw new RuntimeException(e);
+            } catch (ServantNotActive e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
+
+
+    private static void menuSesion(GestionUsuarios objGestion, GestionPlcTu objTu, GestionAlertas objAlertas) {
         int opcion = 0;
         String password;
         String user;
         int ID;
-        Usuario_DTO usuario = null;
+         usuarioDTO usuario = null;
         do{
         System.out.println("=== Menu Sesion ===");
         System.out.println("1. Abrir Sesion");
@@ -61,15 +111,15 @@ public class ClienteDeObjetos {
                     ID = UtilidadesConsola.leerEntero();
                     user = UtilidadesConsola.leerCadena("Ingresar Usuario:");
                     password = UtilidadesConsola.leerCadena("Ingresar Password");
-                    usuario = new Usuario_DTO(ID,"",user,password);
-                    if (objRemoto.abrirSesion(usuario)==1) {
-                        menuOperador();
+                    usuario = new usuarioDTO(ID,"",user,password);
+                    if (objGestion.abrirSesion(usuario)==1) {
+                        menuOperador(objTu,objAlertas);
                     }
                     else {
-                        menuUsuario();
+                        menuUsuario(objTu);
                     }
                     break;
-                    
+
                 case 2:
                     System.out.println("Saliendo...");
                     System.exit(0); // Terminar el programa
@@ -81,14 +131,9 @@ public class ClienteDeObjetos {
         }while(opcion != 2);
     }
 
-    private static void menuOperador() throws RemoteException {
+    private static void menuOperador(GestionPlcTu objTu, GestionAlertas objAlertas) {
         int opcion = 0;
-        usuarioOperador = new UsuarioCllbckImpl();
-        if(objRemoto2.registrarOperador(usuarioOperador)) System.out.println("Operador registrado. ");
-
-        //Datos DTO...
-
-        String id_plctu;
+        objTu.registrarCallback(objAlertas);
         String propietario;
         String tipoIden;
         String numIden;
@@ -97,9 +142,8 @@ public class ClienteDeObjetos {
         String fechaRegistro;
         int lecturaActual = 0;
         int consumo = 0;
-
-
         DatosPlcTu_DTO datosTu;
+
         do{
             System.out.println("=== Menu Operador ===");
             System.out.println("1. Registrar Dispositivo");
@@ -111,14 +155,16 @@ public class ClienteDeObjetos {
                 switch(opcion) {
                     case 1:
                         System.out.println("=== Registro PLC_TU ===");
+                        direccion = UtilidadesConsola.leerCadena("Ingrese el Direccion: ");
+                        propietario = UtilidadesConsola.leerCadena("Ingrese el Propeitario : ");
                         propietario = UtilidadesConsola.leerCadena("Ingrese el Propeitario : ");
                         tipoIden = UtilidadesConsola.leerCadena("Tipo Identificacion: ");
                         numIden = UtilidadesConsola.leerCadena("Ingrese el numero de identificacion: ");
                         direccion = UtilidadesConsola.leerCadena("Ingrese el Direccion: ");
                         estrato = UtilidadesConsola.leerCadena("Ingrese el estrato: ");
                         fechaRegistro = UtilidadesConsola.leerCadena("Ingrese el fecha de registro: ");
-                        datosTu = new DatosPlcTu_DTO(propietario,"00",tipoIden,numIden,direccion,estrato,fechaRegistro,lecturaActual,consumo);
-                        if(objRemoto2.registrar_plctu(datosTu))
+                        datosTu = new DatosPlcTu_DTO("00",propietario,tipoIden,numIden,direccion,estrato,fechaRegistro,lecturaActual,consumo);
+                        if(objTu.registrar_plctu(datosTu))
                         {
                             System.out.println("Dispositivo registrado");
                         }
@@ -129,13 +175,14 @@ public class ClienteDeObjetos {
                         break;
                     case 2:
                         String ConsultaID = UtilidadesConsola.leerCadena("Ingrese el ID: ");
-                        DatosPlcTu_DTO recuperado = objRemoto2.consultarplctu(Integer.parseInt(ConsultaID));
+                        DatosPlcTu_DTOHolder recuperado = new DatosPlcTu_DTOHolder();
+                        objTu.consultarplctu(Integer.parseInt(ConsultaID),recuperado);
 
                         if( recuperado != null)      {
-                            System.out.println("ID: " + recuperado.getId_plctu());
-                            System.out.println("Direccion: "+recuperado.getDireccion());
-                            System.out.println("Propietario: "+recuperado.getPropietario());
-                            System.out.println("Consumo: "+recuperado.getConsumo());
+                            System.out.println("ID: " + recuperado.value.id_plctu);
+                            System.out.println("Direccion: "+recuperado.value.direccion);
+                            System.out.println("Propietario: "+recuperado.value.propietario);
+                            System.out.println("Consumo: "+recuperado.value.consumo);
                         }
                         else
                         {
@@ -154,14 +201,14 @@ public class ClienteDeObjetos {
         }while(opcion != 3);
     }
 
-    private static void menuUsuario() throws RemoteException {
+    private static void menuUsuario(GestionPlcTu objTu) {
         int opcion = 0;
         do{
         System.out.println("=== Menu Usuario ===");
         System.out.println("1. Consultar Dispositivo");
         System.out.println("2. Salir");
         System.out.println("");
-        
+
 
             System.out.println("Digite una opcion:");
             opcion = UtilidadesConsola.leerEntero();
@@ -169,17 +216,20 @@ public class ClienteDeObjetos {
             switch(opcion) {
                 case 1:
                     String ConsultaID = UtilidadesConsola.leerCadena("Ingrese el ID: ");
-                    DatosPlcTu_DTO recuperado = objRemoto2.consultarplctu(Integer.parseInt(ConsultaID));
-                        if( recuperado != null)      {
-                            System.out.println("ID: " + recuperado.getId_plctu());
-                            System.out.println("Direccion: "+recuperado.getDireccion());
-                            System.out.println("Propietario: "+recuperado.getPropietario());
-                            System.out.println("Consumo: "+recuperado.getConsumo());
-                        }
-                        else
-                        {
-                            System.out.println("Inexistente");
-                        }
+                    DatosPlcTu_DTOHolder recuperado = new DatosPlcTu_DTOHolder();
+                    objTu.consultarplctu(Integer.parseInt(ConsultaID),recuperado);
+
+                    if( recuperado != null)      {
+                        System.out.println("ID: " + recuperado.value.id_plctu);
+                        System.out.println("Direccion: "+recuperado.value.direccion);
+                        System.out.println("Propietario: "+recuperado.value.propietario);
+                        System.out.println("Consumo: "+recuperado.value.consumo);
+                    }
+                    else
+                    {
+                        System.out.println("Inexistente");
+                    }
+
                     break;
                 case 2:
                     System.out.println("Saliendo...");
@@ -191,10 +241,4 @@ public class ClienteDeObjetos {
             }
         }while(opcion != 2);
     }
-
-    public static void limpiar() {
-        for (int i = 0; i < 20; i++) {
-            System.out.println("");
-        }
     }
-}

@@ -1,14 +1,13 @@
 package plc_tu;
 
-import plc_mms.dto.DatosPlcTu_DTO;
-import plc_mms.sop_rmi.GestionPlcTuInt;
-import plc_mms.sop_rmi.GestionUsuariosInt;
+import plc_mms.sop_corba.GestionPlcTu;
+import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTOHolder;
+
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
 import java.time.LocalDate;
 
 public class LectuaActual extends JFrame {
@@ -18,9 +17,9 @@ public class LectuaActual extends JFrame {
     private JTextField txtID;
     private JButton btnConsultar;
     private JPanel PanelLectura;
-    private DatosPlcTu_DTO plc;
+    private DatosPlcTu_DTOHolder plc;
 
-    public LectuaActual(GestionPlcTuInt objPLC) {
+    public LectuaActual(GestionPlcTu objPLC) {
         setContentPane(PanelLectura);
         setTitle("Login");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -31,14 +30,10 @@ public class LectuaActual extends JFrame {
         btnConsultar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    plc = objPLC.consultarplctu(Integer.parseInt(txtID.getText()));
-                    txtDireccion.setText(plc.getDireccion());
-                    txtFecha.setText(String.valueOf(LocalDate.now()));
-                    txtLectura.setText(String.valueOf(plc.getLectura()));
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
-                }
+                objPLC.consultarplctu(Integer.parseInt(txtID.getText()), plc);
+                txtDireccion.setText(plc.value.direccion);
+                txtFecha.setText(String.valueOf(LocalDate.now()));
+                txtLectura.setText(String.valueOf(plc.value.lectura));
             }
         });
     }
@@ -117,4 +112,5 @@ public class LectuaActual extends JFrame {
     public JComponent $$$getRootComponent$$$() {
         return PanelLectura;
     }
+
 }

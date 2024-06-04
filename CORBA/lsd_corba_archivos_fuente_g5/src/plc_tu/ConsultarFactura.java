@@ -1,8 +1,9 @@
 package plc_tu;
 
-import grsaa.dto.Factura_DTO;
-import plc_mms.dto.DatosPlcTu_DTO;
-import plc_mms.sop_rmi.GestionPlcTuInt;
+import plc_mms.GestionPlcTuImpl;
+import plc_mms.sop_corba.GestionPlcTu;
+import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTOHolder;
+import plc_mms.sop_corba.GestionPlcTuPackage.Factura_DTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,10 +21,10 @@ public class ConsultarFactura extends JFrame {
     private JButton btnConsultar;
     private JLabel txtLecturaFinal;
     private JLabel txtLecturaIni;
-    private DatosPlcTu_DTO plc;
+    private DatosPlcTu_DTOHolder plc;
     private Factura_DTO factura;
 
-    public ConsultarFactura(GestionPlcTuInt objPLC) {
+    public ConsultarFactura(GestionPlcTu objPLC) {
 
         setContentPane(PanelLectura);
         setTitle("Login");
@@ -35,19 +36,13 @@ public class ConsultarFactura extends JFrame {
         btnConsultar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    plc = objPLC.consultarplctu(Integer.parseInt(txtID.getText()));
-                    factura = objPLC.recuperarFactura(txtID.getText());
-                    txtDireccion.setText(plc.getDireccion());
-                    txtFecha.setText(String.valueOf(LocalDate.now()));
-                    txtConsumo.setText(String.valueOf(plc.getLectura()));
-                    txtLecturaIni.setText(factura.getLecturaIni());
-                    txtLecturaFinal.setText(factura.getLecturaFin());
-
-
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
-                }
+                objPLC.consultarplctu(Integer.parseInt(txtID.getText()), plc);
+                factura = objPLC.recuperarFactura(txtID.getText());
+                txtDireccion.setText(plc.value.direccion);
+                txtFecha.setText(String.valueOf(LocalDate.now()));
+                txtConsumo.setText(String.valueOf(plc.value.consumo));
+                txtLecturaIni.setText(factura.lecturaIni);
+                txtLecturaFinal.setText(factura.lecturaFin);
             }
         });
     }

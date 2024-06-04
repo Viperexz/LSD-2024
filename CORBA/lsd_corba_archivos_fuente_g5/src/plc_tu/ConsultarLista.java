@@ -1,23 +1,20 @@
 package plc_tu;
 
-import plc_mms.dto.DatosPlcTu_DTO;
-import plc_mms.sop_rmi.GestionPlcTuInt;
+import plc_mms.sop_corba.GestionPlcTu;
+import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTO;
+import plc_mms.sop_corba.GestionPlcTuPackage.ListaDtoHolder;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
 
 public class ConsultarLista extends JFrame {
     private JPanel jPaneConsultaLista;
     private JTable tblDispositivos;
     DefaultTableModel modelo;
-    private ArrayList<DatosPlcTu_DTO> listTU;
+    private ListaDtoHolder listTU;
 
-    public ConsultarLista(GestionPlcTuInt objPLC) {
+    public ConsultarLista(GestionPlcTu objPLC) {
         // Configuración de la ventana
         setContentPane(jPaneConsultaLista);
         setTitle("Consulta de Dispositivos PLC/TU");
@@ -36,23 +33,18 @@ public class ConsultarLista extends JFrame {
 
         try {
             // Obtener la lista de dispositivos PLC/TU
-            listTU = objPLC.recuperarLista();
+            objPLC.recuperarLista(listTU);
 
             // Verificar si la lista está vacía
-            if (listTU.isEmpty()) {
+            if (listTU.value.listTU.length == 0) {
                 JOptionPane.showMessageDialog(null, "No se encontraron dispositivos PLC/TU conectados.",
                         "Error remoto", JOptionPane.ERROR_MESSAGE);
             } else {
                 // Agregar filas al modelo de tabla
-                for (DatosPlcTu_DTO dato : listTU) {
-                    modelo.addRow(new Object[]{dato.getId_plctu(), dato.getPropietario(), dato.getDireccion()});
+                for (DatosPlcTu_DTO dato : listTU.value.listTU) {
+                    modelo.addRow(new Object[]{dato.id_plctu, dato.propietario, dato.direccion});
                 }
             }
-        } catch (RemoteException ex) {
-            // Manejo de excepciones RemoteException
-            JOptionPane.showMessageDialog(null, "Error remoto al recuperar la lista de dispositivos.",
-                    "Error remoto", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
         } catch (Exception ex) {
             // Manejo de otras excepciones
             JOptionPane.showMessageDialog(null, "Se produjo un error al recuperar la lista de dispositivos.",

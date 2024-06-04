@@ -1,13 +1,13 @@
 package plc_tu;
 
-import plc_mms.sop_rmi.GestionPlcTuInt;
-import plc_tu.sop_rmi.UsuarioCllbckImpl;
+import plc_mms.sop_corba.GestionPlcTu;
+import plc_tu.sop_corba.GestionAlertas;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
+
 
 public class menuOperador extends JFrame {
 
@@ -20,27 +20,28 @@ public class menuOperador extends JFrame {
     private JButton a6CerrarProgramaButton;
     private UsuarioCllbckImpl usuarioOperador;
 
-    public menuOperador(GestionPlcTuInt objPLC) throws RemoteException {
+    public menuOperador(GestionPlcTu objTu, GestionAlertas objAlertas) {
         setContentPane(OperadorPane);
         setTitle("Operador");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(300, 400);
         setLocationRelativeTo(null);
         setVisible(true);
-        usuarioOperador = new UsuarioCllbckImpl();
-        if (objPLC.registrarOperador(usuarioOperador)) System.out.println("Operador registrado. ");
+
+        objTu.registrarCallback(objAlertas);
+        System.out.println("Operador registrado. ");
 
         btnRegistrar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new registrarDispositivo(objPLC);
+                new registrarDispositivo(objTu);
             }
         });
 
         btnGestionar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new gestionDispositivos(objPLC);
+                new gestionDispositivos(objTu);
 
             }
         });

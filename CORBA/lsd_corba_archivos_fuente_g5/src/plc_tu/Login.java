@@ -1,15 +1,13 @@
 package plc_tu;
 
-import plc_mms.dto.Usuario_DTO;
-import plc_mms.sop_rmi.GestionPlcTuInt;
-import plc_mms.sop_rmi.GestionUsuariosInt;
-import plc_tu.utilidades.UtilidadesRegistroS;
-
+import plc_mms.sop_corba.GestionPlcTu;
+import plc_mms.sop_corba.GestionUsuarios;
+import plc_mms.sop_corba.GestionUsuariosPackage.usuarioDTO;
+import plc_tu.sop_corba.GestionAlertas;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
 
 public class Login extends JFrame {
     private JTextField txtUsuario;
@@ -17,9 +15,10 @@ public class Login extends JFrame {
     private JTextField txtClave;
     private JTextField txtID;
     private JPanel LoginPane;
-    Usuario_DTO usuario = null;
+    private usuarioDTO usuario = null;
 
-    public Login(GestionUsuariosInt objUsuario, GestionPlcTuInt objPLC) {
+    public Login(GestionUsuarios objGestion, GestionPlcTu objTu, GestionAlertas objAlertas) {
+
         setContentPane(LoginPane);
         setTitle("Login");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -30,17 +29,14 @@ public class Login extends JFrame {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                usuario = new Usuario_DTO(Integer.parseInt(txtID.getText()), "", txtUsuario.getText(), txtClave.getText());
-                try {
-                    if (objUsuario.abrirSesion(usuario) == 1) {
-                        dispose();
-                        new menuOperador(objPLC);
-                    } else {
-                        JOptionPane.showMessageDialog(
-                                null, "Error al enviar la informacion", "Error remoto", JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
+                usuario = new usuarioDTO(Integer.parseInt(txtID.getText()), "", txtUsuario.getText(), txtClave.getText());
+
+                if (objGestion.abrirSesion(usuario) == 1) {
+                    dispose();
+                    new menuOperador(objTu, objAlertas);
+                } else {
+                    JOptionPane.showMessageDialog(
+                            null, "Error al enviar la informacion", "Error remoto", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

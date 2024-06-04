@@ -1,8 +1,7 @@
 package plc_tu;
 
-import plc_mms.sop_rmi.GestionPlcTuInt;
-import plc_mms.sop_rmi.GestionUsuariosInt;
-import plc_tu.sop_rmi.UsuarioCllbckImpl;
+import plc_mms.sop_corba.GestionPlcTu;
+import plc_tu.sop_corba.GestionAlertas;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,15 +17,18 @@ public class menuUsuario extends JFrame {
     private JButton btnConsultarFactura;
     private UsuarioCllbckImpl usuarioOperador;
 
-    public menuUsuario(GestionPlcTuInt objPLC) throws RemoteException {
+    public menuUsuario(GestionPlcTu objPLC, GestionAlertas objAlertas) throws RemoteException {
         setContentPane(panelUsuario);
         setTitle("Login");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(300, 250);
         setLocationRelativeTo(null);
         setVisible(true);
+
+
         usuarioOperador = new UsuarioCllbckImpl();
-        if (objPLC.usuariosConectados(usuarioOperador)) System.out.println("Usuario Registrado. ");
+        objPLC.usuariosConectados(objAlertas);
+        System.out.println("Usuario Registrado. ");
         btnConsultarLista.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

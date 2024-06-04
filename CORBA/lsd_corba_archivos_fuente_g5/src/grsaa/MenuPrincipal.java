@@ -1,8 +1,6 @@
 package grsaa;
 
-import grsaa.dto.ListTu_DTO;
-import grsaa.sop_rmi.GestionPlcMmsIntImpl;
-import plc_mms.dto.DatosPlcTu_DTO;
+import grsaa.sop_corba.GestionDispositivosPackage.DatosPlcTu_DTO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -18,10 +16,10 @@ public class MenuPrincipal extends JFrame {
     private JTable tbTU;
     private JPanel mainPane;
     private JButton btnConsultar;
-    private ArrayList<DatosPlcTu_DTO> listTU;
+    private DatosPlcTu_DTO[] listTU;
     DefaultTableModel modelo = new DefaultTableModel();
 
-    public MenuPrincipal(GestionPlcMmsIntImpl objGrsaaa) {
+    public MenuPrincipal(GestionDispositivosImpl objGrsaaa) {
         setContentPane(mainPane);
         setTitle("Menu Principal");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -50,24 +48,24 @@ public class MenuPrincipal extends JFrame {
                 // Limpiar la tabla antes de agregar nuevas filas
                 modelo.setRowCount(0);
 
-                listTU = objGrsaaa.getGestionTU().getListTU();
+                listTU = objGrsaaa.getGestionTU().listTU;
 
-                if (listTU.isEmpty()) {
+                if (listTU.length == 0) {
                     JOptionPane.showMessageDialog(
                             null, "No se encontraron TU conectados. ", "Error remoto", JOptionPane.ERROR_MESSAGE);
                 } else {
                     // Agregar filas al modelo de tabla
                     for (DatosPlcTu_DTO dato : listTU) {
                         modelo.addRow(new Object[]{
-                                dato.getId_plctu(),
-                                dato.getPropietario(),
-                                dato.getTipoIden(),
-                                dato.getNumIden(),
-                                dato.getDireccion(),
-                                dato.getEstrato(),
-                                dato.getFechaRegistro(),
-                                dato.getLectura(),
-                                dato.getConsumo()
+                                dato.id_plctu,
+                                dato.propietario,
+                                dato.tipoIden,
+                                dato.numIden,
+                                dato.direccion,
+                                dato.estrato,
+                                dato.fechaRegistro,
+                                dato.lectura,
+                                dato.consumo
                         });
                     }
                 }
@@ -97,7 +95,7 @@ public class MenuPrincipal extends JFrame {
                 }
 
                 // Actualizar la lista ListTu_DTO con los nuevos datos
-                objGrsaaa.getGestionTU().setListTU(nuevosDatos);
+                objGrsaaa.getGestionTU().listTU = nuevosDatos.toArray(new DatosPlcTu_DTO[0]);
             }
         });
     }

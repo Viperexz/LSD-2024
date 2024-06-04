@@ -1,7 +1,25 @@
 package plc_tu;
 
-import plc_mms.sop_rmi.GestionPlcTuInt;
-import plc_mms.sop_rmi.GestionUsuariosInt;
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.ORBPackage.InvalidName;
+import org.omg.CORBA.Object;
+import org.omg.CosNaming.NameComponent;
+import org.omg.CosNaming.NamingContextExt;
+import org.omg.CosNaming.NamingContextExtHelper;
+import org.omg.CosNaming.NamingContextPackage.CannotProceed;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer.POAHelper;
+import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
+import org.omg.PortableServer.POAPackage.ServantNotActive;
+import org.omg.PortableServer.POAPackage.WrongPolicy;
+import plc_mms.sop_corba.GestionPlcTu;
+import plc_mms.sop_corba.GestionPlcTuHelper;
+import plc_mms.sop_corba.GestionUsuarios;
+import plc_mms.sop_corba.GestionUsuariosHelper;
+
+import plc_tu.sop_corba.GestionAlertas;
+import plc_tu.sop_corba.GestionAlertasHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +34,7 @@ public class menuSesion extends JFrame {
     private JPanel SesionPane;
 
 
-    public menuSesion(GestionUsuariosInt objUsuario, GestionPlcTuInt objPLC) {
+    public menuSesion(GestionUsuarios objGestion, GestionPlcTu objTu, GestionAlertas objAlertas) {
         setContentPane(SesionPane);
         setTitle("Login");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -27,7 +45,7 @@ public class menuSesion extends JFrame {
         a1AbrirSesionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new Login(objUsuario, objPLC);
+                new Login(objGestion, objTu, objAlertas);
                 dispose();
             }
         });
@@ -35,7 +53,7 @@ public class menuSesion extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    new menuUsuario(objPLC);
+                    new menuUsuario(objTu, objAlertas);
                 } catch (RemoteException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -48,6 +66,68 @@ public class menuSesion extends JFrame {
                 dispose();
             }
         });
+    }
+
+
+    public static void main(String[] args) {
+        try {
+            System.out.println("1. Crea e inicia el ORB");
+            ORB orb = ORB.init(args, null);
+
+            System.out.println("2. Obtiene una referencia al servicio de nombrado por medio del orb");
+            Object objRefNameService = orb.resolve_initial_references("NameService");
+
+            POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            System.out.println("3. Activa el POAManager");
+            rootpoa.the_POAManager().activate();
+            System.out.println("3. Convierte la ref genErica a ref de NamingContextExt");
+            NamingContextExt refContextoNombrado = NamingContextExtHelper.narrow(objRefNameService);
+
+            System.out.println("4. Resuelve la referencia del objeto en el N_S.");
+
+            String identificadorServant = "ServUsuarios";
+            String identificadorServant1 = "ServGesTU";
+
+            NameComponent path[] = refContextoNombrado.to_name(identificadorServant);
+            NameComponent path1[] = refContextoNombrado.to_name(identificadorServant1);
+
+            Object objRef = refContextoNombrado.resolve(path);
+            Object objRef1 = refContextoNombrado.resolve(path1);
+
+            System.out.println("5. Convierte la referencia de un objeto genErico a una referencia al servant ");
+
+            GestionUsuarios objUsuarios = GestionUsuariosHelper.narrow(objRef);
+            System.out.println("Se obtuvo Obj usuarios");
+
+
+            GestionPlcTu objTu = GestionPlcTuHelper.narrow(objRef1);
+            System.out.println("Se obtuvo Obj Tu");
+            System.out.println("InvocaciOn de los metodos como si fueran locales");
+
+
+            System.out.println("7. Crea el objeto servant callback");
+            UsuarioCllbckImpl objRefCllbck = new UsuarioCllbckImpl();
+            objRefCllbck.setORB(orb);
+
+            System.out.println("8. Convierte la referencia de un objeto genErico a una referencia al servant callback");
+            Object ref = rootpoa.servant_to_reference(objRefCllbck);
+            GestionAlertas objAlertasCallback = GestionAlertasHelper.narrow(ref);
+            new menuSesion(objUsuarios, objTu, objAlertasCallback);
+
+        } catch (InvalidName | CannotProceed | org.omg.CosNaming.NamingContextPackage.InvalidName | NotFound e) {
+            System.out.println("ERROR : " + e.getMessage());
+            e.printStackTrace(System.out);
+        } catch (
+                WrongPolicy e) {
+            throw new RuntimeException(e);
+        } catch (
+                AdapterInactive e) {
+            throw new RuntimeException(e);
+        } catch (
+                ServantNotActive e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 

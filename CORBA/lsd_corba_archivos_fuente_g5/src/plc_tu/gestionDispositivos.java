@@ -1,7 +1,8 @@
 package plc_tu;
-
-import plc_mms.dto.DatosPlcTu_DTO;
-import plc_mms.sop_rmi.GestionPlcTuInt;
+import plc_mms.sop_corba.GestionPlcTu;
+import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTO;
+import plc_mms.sop_corba.GestionPlcTuPackage.ListaDto;
+import plc_mms.sop_corba.GestionPlcTuPackage.ListaDtoHolder;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -18,9 +19,8 @@ public class gestionDispositivos extends JFrame {
     private JButton btnActualizar;
     private JButton btnEliminar;
     private JTable tblDispositivos;
-    private ArrayList<DatosPlcTu_DTO> listTU;
-
-    public gestionDispositivos(GestionPlcTuInt objPLC) {
+    ListaDtoHolder listTU = new ListaDtoHolder();
+    public gestionDispositivos(GestionPlcTu objPLC) {
         setContentPane(paneGestion);
         setTitle("Gestion Dispositivos");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -48,29 +48,23 @@ public class gestionDispositivos extends JFrame {
                 // Limpiar la tabla antes de agregar nuevas filas
                 modelo.setRowCount(0);
                 tblDispositivos.setModel(modelo); // Asignar el modelo de tabla a la JTable
-
-                try {
-                    listTU = objPLC.recuperarLista();
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-                if (listTU.isEmpty()) {
+                     objPLC.recuperarLista(listTU);
+                if (listTU.value.listTU.length == 0) {
                     JOptionPane.showMessageDialog(
                             null, "No se encontraron TU conectados. ", "Error remoto", JOptionPane.ERROR_MESSAGE);
                 } else {
                     // Agregar filas al modelo de tabla
-                    for (DatosPlcTu_DTO dato : listTU) {
+                    for (DatosPlcTu_DTO dato : listTU.value.listTU) {
                         modelo.addRow(new Object[]{
-                                dato.getId_plctu(),
-                                dato.getPropietario(),
-                                dato.getTipoIden(),
-                                dato.getNumIden(),
-                                dato.getDireccion(),
-                                dato.getEstrato(),
-                                dato.getFechaRegistro(),
-                                dato.getLectura(),
-                                dato.getConsumo()
+                                dato.id_plctu,
+                                dato.propietario,
+                                dato.tipoIden,
+                                dato.numIden,
+                                dato.direccion,
+                                dato.estrato,
+                                dato.fechaRegistro,
+                                dato.lectura,
+                                dato.consumo
                         });
                     }
                 }
@@ -81,6 +75,7 @@ public class gestionDispositivos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Obtener los nuevos datos de la tabla
+                ListaDto listNuevos = new ListaDto();
                 ArrayList<DatosPlcTu_DTO> nuevosDatos = new ArrayList<>();
 
                 for (int i = 0; i < modelo.getRowCount(); i++) {
@@ -97,13 +92,9 @@ public class gestionDispositivos extends JFrame {
                     DatosPlcTu_DTO nuevoDato = new DatosPlcTu_DTO(id_plctu, propietario, tipoIden, numIden, direccion, estrato, fechaRegistro, lectura, consumo);
                     nuevosDatos.add(nuevoDato);
                 }
+                listNuevos.listTU = nuevosDatos.toArray(new DatosPlcTu_DTO[0]);
+                objPLC.actualizarLista(listNuevos);
 
-                // Actualizar la lista ListTu_DTO con los nuevos datos
-                try {
-                    objPLC.actualizarLista(nuevosDatos);
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
-                }
             }
         });
         btnEliminar.addActionListener(new ActionListener() {
@@ -112,17 +103,12 @@ public class gestionDispositivos extends JFrame {
                 int rowIndex = tblDispositivos.getSelectedRow();
 
                 String id_plctu = (String) tblDispositivos.getValueAt(rowIndex, 0).toString();
-                try {
+
                     if (objPLC.eliminarTU(id_plctu)) {
                         JOptionPane.showMessageDialog(
                                 null, "Se elimino correctamente. ", "Eliminado", JOptionPane.INFORMATION_MESSAGE);
                     } else JOptionPane.showMessageDialog(
                             null, "Error al eliminar. ", "Error remoto", JOptionPane.ERROR_MESSAGE);
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-
             }
         });
     }

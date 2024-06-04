@@ -1,14 +1,12 @@
 package plc_tu;
 
-import plc_mms.dto.DatosPlcTu_DTO;
-import plc_mms.dto.Usuario_DTO;
-import plc_mms.sop_rmi.GestionPlcTuInt;
+import plc_mms.sop_corba.GestionPlcTu;
+import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTO;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +21,7 @@ public class registrarDispositivo extends JFrame {
     private JTextField txtFecha;
     private DatosPlcTu_DTO plcTu;
 
-    public registrarDispositivo(GestionPlcTuInt objPLC) {
+    public registrarDispositivo(GestionPlcTu objPLC) {
         setContentPane(RegistrarPane);
         setTitle("Operador");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -54,11 +52,8 @@ public class registrarDispositivo extends JFrame {
                     plcTu = new DatosPlcTu_DTO("0", txtNombre.getText(), (String) dropTipoID.getSelectedItem(), txtCedula.getText(), txtDireccion.getText(), (String) dropEstrato.getSelectedItem(), txtFecha.getText(), 0, 0);
                     JOptionPane.showMessageDialog(null, "Registrado correctamente.");
                     dispose();
-                    try {
-                        objPLC.registrar_plctu(plcTu);
-                    } catch (RemoteException ex) {
-                        JOptionPane.showMessageDialog(null, ex.getMessage());
-                    }
+                    objPLC.registrar_plctu(plcTu);
+
                 } else {
                     JOptionPane.showMessageDialog(null, "Fecha incorrecta");
                 }
