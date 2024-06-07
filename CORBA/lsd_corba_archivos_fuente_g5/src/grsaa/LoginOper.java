@@ -84,8 +84,9 @@ public class LoginOper extends JFrame {
             refContextoNombrado.rebind(path, href);
 
             System.out.println("El Servidor esta listo y esperando ...");
-            orb.run();
             new LoginOper(ObjServant);
+            orb.run();
+
 
         } catch (Exception e) {
             System.err.println("ERROR: " + e);

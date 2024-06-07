@@ -19,12 +19,13 @@ public class gestionDispositivos extends JFrame {
     private JButton btnActualizar;
     private JButton btnEliminar;
     private JTable tblDispositivos;
-    ListaDtoHolder listTU = new ListaDtoHolder();
+   ListaDtoHolder listTU = new ListaDtoHolder();
+
     public gestionDispositivos(GestionPlcTu objPLC) {
         setContentPane(paneGestion);
         setTitle("Gestion Dispositivos");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(400, 600);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
         setVisible(true);
 
@@ -48,8 +49,7 @@ public class gestionDispositivos extends JFrame {
                 // Limpiar la tabla antes de agregar nuevas filas
                 modelo.setRowCount(0);
                 tblDispositivos.setModel(modelo); // Asignar el modelo de tabla a la JTable
-                     objPLC.recuperarLista(listTU);
-                if (listTU.value.listTU.length == 0) {
+                if (!objPLC.recuperarLista(listTU)) {
                     JOptionPane.showMessageDialog(
                             null, "No se encontraron TU conectados. ", "Error remoto", JOptionPane.ERROR_MESSAGE);
                 } else {
@@ -104,11 +104,11 @@ public class gestionDispositivos extends JFrame {
 
                 String id_plctu = (String) tblDispositivos.getValueAt(rowIndex, 0).toString();
 
-                    if (objPLC.eliminarTU(id_plctu)) {
-                        JOptionPane.showMessageDialog(
-                                null, "Se elimino correctamente. ", "Eliminado", JOptionPane.INFORMATION_MESSAGE);
-                    } else JOptionPane.showMessageDialog(
-                            null, "Error al eliminar. ", "Error remoto", JOptionPane.ERROR_MESSAGE);
+                if (objPLC.eliminarTU(id_plctu)) {
+                    JOptionPane.showMessageDialog(
+                            null, "Se elimino correctamente. ", "Eliminado", JOptionPane.INFORMATION_MESSAGE);
+                } else JOptionPane.showMessageDialog(
+                        null, "Error al eliminar. ", "Error remoto", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -143,8 +143,10 @@ public class gestionDispositivos extends JFrame {
         btnEliminar = new JButton();
         btnEliminar.setText("Eliminar");
         paneGestion.add(btnEliminar, new com.intellij.uiDesigner.core.GridConstraints(2, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        paneGestion.add(scrollPane1, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tblDispositivos = new JTable();
-        paneGestion.add(tblDispositivos, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        scrollPane1.setViewportView(tblDispositivos);
     }
 
     /**

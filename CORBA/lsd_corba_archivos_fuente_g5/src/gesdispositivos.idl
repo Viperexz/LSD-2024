@@ -29,7 +29,7 @@ interface GestionDispositivos{
     };
 
     void notificacionmms(in notificacionDTO objNotificacion);
-    long lectura(in Lectura_DTO objLectura);
-    double recuperarFactura(in string IdTu , out Factura_DTO objFactura);
+    long lectura(inout Lectura_DTO objLectura);
+    boolean recuperarFactura(in string IdTu , out Factura_DTO objFactura);
     };
 };

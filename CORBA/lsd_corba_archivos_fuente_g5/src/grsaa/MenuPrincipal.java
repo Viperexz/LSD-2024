@@ -1,6 +1,7 @@
 package grsaa;
 
 import grsaa.sop_corba.GestionDispositivosPackage.DatosPlcTu_DTO;
+import grsaa.sop_corba.GestionDispositivosPackage.notificacionDTO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -10,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class MenuPrincipal extends JFrame {
-    private JTextArea textArea1;
     private JButton btnCrear;
     private JButton Eliminar;
     private JTable tbTU;
@@ -23,7 +23,7 @@ public class MenuPrincipal extends JFrame {
         setContentPane(mainPane);
         setTitle("Menu Principal");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(300, 500);
+        setSize(1000, 500);
         setLocationRelativeTo(null);
         setVisible(true);
 
@@ -38,16 +38,13 @@ public class MenuPrincipal extends JFrame {
         modelo.addColumn("Fecha de Registro");
         modelo.addColumn("Lectura");
         modelo.addColumn("Consumo");
-
         tbTU.setModel(modelo); // Asignar el modelo de tabla a la JTable
 
         btnConsultar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 // Limpiar la tabla antes de agregar nuevas filas
                 modelo.setRowCount(0);
-
                 listTU = objGrsaaa.getGestionTU().listTU;
 
                 if (listTU.length == 0) {
@@ -93,9 +90,9 @@ public class MenuPrincipal extends JFrame {
                     DatosPlcTu_DTO nuevoDato = new DatosPlcTu_DTO(id_plctu, propietario, tipoIden, numIden, direccion, estrato, fechaRegistro, lectura, consumo);
                     nuevosDatos.add(nuevoDato);
                 }
-
+                notificacionDTO tempNot = new notificacionDTO(objGrsaaa.getGestionTU().idPlcmms, nuevosDatos.toArray(new DatosPlcTu_DTO[0]));
                 // Actualizar la lista ListTu_DTO con los nuevos datos
-                objGrsaaa.getGestionTU().listTU = nuevosDatos.toArray(new DatosPlcTu_DTO[0]);
+                objGrsaaa.setGestionTU(tempNot);
             }
         });
     }
@@ -117,12 +114,10 @@ public class MenuPrincipal extends JFrame {
      */
     private void $$$setupUI$$$() {
         mainPane = new JPanel();
-        mainPane.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(8, 4, new Insets(0, 0, 0, 0), -1, -1));
+        mainPane.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(7, 4, new Insets(0, 0, 0, 0), -1, -1));
         final JLabel label1 = new JLabel();
         label1.setText("Menu administrador");
         mainPane.add(label1, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 4, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textArea1 = new JTextArea();
-        mainPane.add(textArea1, new com.intellij.uiDesigner.core.GridConstraints(7, 0, 1, 4, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
         mainPane.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 4, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(5, 5), null, 0, false));
         final com.intellij.uiDesigner.core.Spacer spacer2 = new com.intellij.uiDesigner.core.Spacer();
@@ -138,11 +133,13 @@ public class MenuPrincipal extends JFrame {
         btnCrear = new JButton();
         btnCrear.setText("Actualizar");
         mainPane.add(btnCrear, new com.intellij.uiDesigner.core.GridConstraints(5, 1, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        tbTU = new JTable();
-        mainPane.add(tbTU, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 4, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         btnConsultar = new JButton();
         btnConsultar.setText("Consultar");
         mainPane.add(btnConsultar, new com.intellij.uiDesigner.core.GridConstraints(5, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        mainPane.add(scrollPane1, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 4, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        tbTU = new JTable();
+        scrollPane1.setViewportView(tbTU);
     }
 
     /**

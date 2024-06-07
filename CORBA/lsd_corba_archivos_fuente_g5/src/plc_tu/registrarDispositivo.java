@@ -24,8 +24,8 @@ public class registrarDispositivo extends JFrame {
     public registrarDispositivo(GestionPlcTu objPLC) {
         setContentPane(RegistrarPane);
         setTitle("Operador");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(400, 250);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setSize(400, 300);
         setLocationRelativeTo(null);
         setVisible(true);
 

@@ -2,6 +2,7 @@ package plc_tu;
 
 import plc_mms.sop_corba.GestionPlcTu;
 import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTO;
+import plc_mms.sop_corba.GestionPlcTuPackage.ListaDto;
 import plc_mms.sop_corba.GestionPlcTuPackage.ListaDtoHolder;
 
 import javax.swing.*;
@@ -12,14 +13,15 @@ public class ConsultarLista extends JFrame {
     private JPanel jPaneConsultaLista;
     private JTable tblDispositivos;
     DefaultTableModel modelo;
-    private ListaDtoHolder listTU;
+    private ListaDtoHolder listTU = new ListaDtoHolder();
+    ;
 
     public ConsultarLista(GestionPlcTu objPLC) {
         // Configuración de la ventana
         setContentPane(jPaneConsultaLista);
         setTitle("Consulta de Dispositivos PLC/TU");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(500, 400); // Tamaño ajustado para una mejor visualización de la tabla
+        setSize(1000, 400); // Tamaño ajustado para una mejor visualización de la tabla
         setLocationRelativeTo(null);
 
         // Inicialización del modelo de tabla y configuración de las columnas
@@ -33,10 +35,10 @@ public class ConsultarLista extends JFrame {
 
         try {
             // Obtener la lista de dispositivos PLC/TU
-            objPLC.recuperarLista(listTU);
+            ;
 
             // Verificar si la lista está vacía
-            if (listTU.value.listTU.length == 0) {
+            if (!objPLC.recuperarLista(listTU)) {
                 JOptionPane.showMessageDialog(null, "No se encontraron dispositivos PLC/TU conectados.",
                         "Error remoto", JOptionPane.ERROR_MESSAGE);
             } else {
@@ -76,8 +78,10 @@ public class ConsultarLista extends JFrame {
         final JLabel label1 = new JLabel();
         label1.setText("Dispositivos Registrados");
         jPaneConsultaLista.add(label1, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        jPaneConsultaLista.add(scrollPane1, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tblDispositivos = new JTable();
-        jPaneConsultaLista.add(tblDispositivos, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        scrollPane1.setViewportView(tblDispositivos);
     }
 
     /**
@@ -86,4 +90,5 @@ public class ConsultarLista extends JFrame {
     public JComponent $$$getRootComponent$$$() {
         return jPaneConsultaLista;
     }
+
 }

@@ -4,6 +4,7 @@ import plc_mms.GestionPlcTuImpl;
 import plc_mms.sop_corba.GestionPlcTu;
 import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTOHolder;
 import plc_mms.sop_corba.GestionPlcTuPackage.Factura_DTO;
+import plc_mms.sop_corba.GestionPlcTuPackage.Factura_DTOHolder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,8 +22,8 @@ public class ConsultarFactura extends JFrame {
     private JButton btnConsultar;
     private JLabel txtLecturaFinal;
     private JLabel txtLecturaIni;
-    private DatosPlcTu_DTOHolder plc;
-    private Factura_DTO factura;
+    private final DatosPlcTu_DTOHolder plc = new DatosPlcTu_DTOHolder();
+    private final Factura_DTOHolder factura = new Factura_DTOHolder();
 
     public ConsultarFactura(GestionPlcTu objPLC) {
 
@@ -32,17 +33,27 @@ public class ConsultarFactura extends JFrame {
         setSize(300, 600);
         setLocationRelativeTo(null);
         setVisible(true);
-
         btnConsultar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 objPLC.consultarplctu(Integer.parseInt(txtID.getText()), plc);
-                factura = objPLC.recuperarFactura(txtID.getText());
-                txtDireccion.setText(plc.value.direccion);
-                txtFecha.setText(String.valueOf(LocalDate.now()));
-                txtConsumo.setText(String.valueOf(plc.value.consumo));
-                txtLecturaIni.setText(factura.lecturaIni);
-                txtLecturaFinal.setText(factura.lecturaFin);
+
+                // Inicializar factura.value antes de llamar a recuperarFactura
+                factura.value = new Factura_DTO(); // Puedes utilizar el constructor por defecto
+
+                objPLC.recuperarFactura(txtID.getText(), factura);
+
+                // Verificar si factura.value no es nulo antes de acceder a sus propiedades
+                if (factura.value != null) {
+                    txtDireccion.setText(plc.value.direccion);
+                    txtFecha.setText(String.valueOf(LocalDate.now()));
+                    txtConsumo.setText(String.valueOf(factura.value.consumo));
+                    txtLecturaIni.setText(factura.value.lecturaIni);
+                    txtLecturaFinal.setText(factura.value.lecturaFin);
+                } else {
+                    // Manejar el caso donde factura.value es nulo
+                    JOptionPane.showMessageDialog(null, "No se encontró la factura para el ID proporcionado.");
+                }
             }
         });
     }

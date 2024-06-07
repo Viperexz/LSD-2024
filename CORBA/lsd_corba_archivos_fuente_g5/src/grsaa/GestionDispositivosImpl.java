@@ -1,9 +1,7 @@
 package grsaa;
 
-import grsaa.sop_corba.GestionDispositivosPackage.Factura_DTO;
-import grsaa.sop_corba.GestionDispositivosPackage.Factura_DTOHolder;
-import grsaa.sop_corba.GestionDispositivosPackage.Lectura_DTO;
-import grsaa.sop_corba.GestionDispositivosPackage.notificacionDTO;
+import com.sun.org.apache.bcel.internal.generic.NEW;
+import grsaa.sop_corba.GestionDispositivosPackage.*;
 import plc_mms.sop_corba.GestionPlcTuPackage.DatosPlcTu_DTO;
 import plc_mms.sop_corba.GestionUsuariosPackage.usuarioDTO;
 
@@ -15,22 +13,26 @@ public class GestionDispositivosImpl extends grsaa.sop_corba.GestionDispositivos
     private usuarioDTO usuario = new usuarioDTO(1,"Juanito Perez","admin","admin");
     private int sesionOPER;
     private notificacionDTO GestionTU;
-    private ArrayList<Factura_DTO> listFacturas;
-
+    private ArrayList<Factura_DTO> listFacturas = new ArrayList<>();
+    int varContador = 0;
 
 
     @Override
     public void notificacionmms(notificacionDTO objNotificacion) {
         System.out.println("El dispositivo PLC_MMS con Id:"+ objNotificacion.idPlcmms +" completo sus registros y esta activo en el sistema");
+        this.GestionTU = objNotificacion;
     }
 
     @Override
-    public int lectura(Lectura_DTO objLectura) {
-        int varContador = 0;
-        System.out.println("Se esta iniciando la lectura.");
-        GestionTU.listTU =  objLectura.listTU;
-        if(varContador == GestionTU.listTU.length) return 1;
+    public int lectura(Lectura_DTOHolder objLectura) {
 
+        System.out.println("Se esta iniciando la lectura.");
+        GestionTU.listTU =  objLectura.value.listTU;
+        if(varContador == GestionTU.listTU.length)
+        {
+            objLectura.value.listTU = GestionTU.listTU;
+            return 1;
+        }
         for (grsaa.sop_corba.GestionDispositivosPackage.DatosPlcTu_DTO plcTu : GestionTU.listTU) {
             if(contarLineas(GestionTU.idPlcmms+"_"+plcTu.id_plctu+".txt")<4) {
                 escribirArchivo(GestionTU.idPlcmms, plcTu.id_plctu, plcTu.lectura);
@@ -39,30 +41,50 @@ public class GestionDispositivosImpl extends grsaa.sop_corba.GestionDispositivos
             {
                 varContador++;
                 System.out.println("Se termino la lectura para este dispositivo: ");
-
                 crearFactura(plcTu,GestionTU.idPlcmms+"_"+plcTu.id_plctu+".txt");
 
-
-
-
             }
         }
         return 0;
     }
+
+
 
     @Override
-    public double recuperarFactura(String IdTu, Factura_DTOHolder objFactura) {
-        System.out.println("Se esta consultando la factura.");
-        for (Factura_DTO facturaElem : listFacturas)
-        {
-            if(facturaElem.id_plctu.equals(IdTu))
-            {
-                objFactura.value = facturaElem;
-                return facturaElem.consumo;
+    public boolean recuperarFactura(String IdTu, Factura_DTOHolder objFactura) {
+        // Verificar si objFactura es nulo
+        if (objFactura == null) {
+            System.out.println("El parámetro objFactura no puede ser null.");
+            return false;
+        }
+
+        // Verificar si listFacturas está inicializado y no está vacío
+        if (listFacturas == null || listFacturas.isEmpty()) {
+            System.out.println("La lista de facturas no está inicializada o está vacía.");
+            return false;
+        }
+
+        // Buscar la factura por IdTu
+        System.out.println("Se está consultando la factura con IdTu: " + IdTu);
+        for (Factura_DTO facturaElem : this.listFacturas) {
+            if (facturaElem != null && facturaElem.id_plctu != null && facturaElem.id_plctu.equals(IdTu)) {
+                objFactura.value = new Factura_DTO(
+                        facturaElem.id_plctu,
+                        facturaElem.lecturaIni,
+                        facturaElem.lecturaFin,
+                        facturaElem.consumo
+                );
+                System.out.println("Factura encontrada.");
+                return true;
             }
         }
-        return 0;
+
+        // Manejar el caso donde la factura no se encuentra
+        System.out.println("Factura no encontrada.");
+        return false;
     }
+
+
     public void crearFactura(grsaa.sop_corba.GestionDispositivosPackage.DatosPlcTu_DTO prmTU , String fileName){
 
         int estrato = Integer.parseInt(prmTU.estrato);
@@ -81,27 +103,11 @@ public class GestionDispositivosImpl extends grsaa.sop_corba.GestionDispositivos
             case 6: prmTU.consumo = (calcularConsumo(fileName,0) * 1002);
                 break;
         }
-        Factura_DTO factura = new Factura_DTO(String.valueOf(calcularConsumo(fileName,1)),prmTU.id_plctu,String.valueOf(calcularConsumo(fileName,2)),prmTU.consumo);
+        Factura_DTO factura = new Factura_DTO(prmTU.id_plctu,String.valueOf(calcularConsumo(fileName,1)),String.valueOf(calcularConsumo(fileName,2)),prmTU.consumo);
+
         System.out.println("Se calculo el consumo del TU: " + prmTU.id_plctu +" En un total de: " + prmTU.consumo);
-        //objRemoto2.notificarFacturas(String.valueOf(prmTU.getId_plctu()));
-        listFacturas.add(factura);
+        this.listFacturas.add(factura);
     }
-
-
-    public Factura_DTO recuperarFactura(String plcID)
-    {
-        System.out.println("Se esta consultando la factura.");
-        for (Factura_DTO facturaElem : listFacturas)
-        {
-            if(facturaElem.id_plctu.equals(plcID))
-            {
-                return facturaElem;
-            }
-        }
-        return null;
-    }
-
-
 
 
     public void escribirArchivo(int mmsid, String plc,int lectura) {

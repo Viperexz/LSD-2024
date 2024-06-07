@@ -17,7 +17,7 @@ public class LectuaActual extends JFrame {
     private JTextField txtID;
     private JButton btnConsultar;
     private JPanel PanelLectura;
-    private DatosPlcTu_DTOHolder plc;
+    private DatosPlcTu_DTOHolder plc = new DatosPlcTu_DTOHolder();
 
     public LectuaActual(GestionPlcTu objPLC) {
         setContentPane(PanelLectura);

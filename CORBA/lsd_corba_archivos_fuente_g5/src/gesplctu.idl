@@ -30,7 +30,7 @@ interface GestionPlcTu{
     void registrarCallback(in GestionAlertas objAlertas);
     void usuariosConectados(in GestionAlertas objUsuario);
     boolean recuperarLista(out ListaDto objLista);
-    Factura_DTO recuperarFactura(in string IdTu);
+    boolean recuperarFactura(in string IdTu , out Factura_DTO objFactura);
     void notificarFacturas(in string IdTu);
     void actualizarLista(in ListaDto prmListaTU);
     boolean eliminarTU(in string idTu);
