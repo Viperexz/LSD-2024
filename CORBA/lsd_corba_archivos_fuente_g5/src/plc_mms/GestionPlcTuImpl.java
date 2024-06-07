@@ -79,15 +79,20 @@ public class GestionPlcTuImpl extends plc_mms.sop_corba.GestionPlcTuPOA {
             if (plcTu.id_plctu.equals(varId)) {
                 System.out.println("Plc Tu encontrado.");
                 objTU.value =plcTu;
-                System.out.println("Se notifico al operador");
-                alertaDto objAlerta = new alertaDto(plcTu.propietario,Integer.parseInt(plcTu.id_plctu),1);
-                System.out.println("Se crea la Alerta DTO");
-
-                for(plc_tu.sop_corba.GestionAlertas TuOperConectado : TuOperConectados)
+                try
                 {
-                    TuOperConectado.notificar(objAlerta);
+                    alertaDto objAlerta = new alertaDto(plcTu.propietario,Integer.parseInt(plcTu.id_plctu),1);
+                    System.out.println("Se crea la Alerta DTO");
+                    for(plc_tu.sop_corba.GestionAlertas TuOperConectado : TuOperConectados)
+                    {
+                        System.out.println("Se notifico al operador");
+                        TuOperConectado.notificar(objAlerta);
+                    }
                 }
-
+                catch (Exception e)
+                {
+                    System.out.println("Los operadores no estan diponibles o se desconectaron.");
+                }
                 return true;
             }
         }
@@ -160,9 +165,14 @@ public class GestionPlcTuImpl extends plc_mms.sop_corba.GestionPlcTuPOA {
 
     @Override
     public void notificarFacturas(String IdTu) {
-        for (GestionAlertas Usuario : UsuarioCOnectado) {
-            alertaDto objAlerta = new alertaDto("",Integer.parseInt(IdTu),1);
-            Usuario.notificar(objAlerta);
+        try{
+            for (GestionAlertas Usuario : UsuarioCOnectado) {
+                alertaDto objAlerta = new alertaDto("",Integer.parseInt(IdTu),2);
+                Usuario.notificar(objAlerta);
+            }
+        }catch (Exception e)
+        {
+            System.out.println("Los usuarios se desconectaron o no estan disponibles");
         }
     }
 
@@ -207,22 +217,32 @@ public class GestionPlcTuImpl extends plc_mms.sop_corba.GestionPlcTuPOA {
 
     private int generarNumeroAleatorio() {
         Random rand = new Random();
-        return rand.nextInt(1000);
+        return rand.nextInt(100);
     }
 
     private synchronized void iniciarLecturaPeriodica() {
         Lectura_DTOHolder lecturaDto = new Lectura_DTOHolder();
         lecturaDto.value = new Lectura_DTO();
+
         Thread thread = new Thread(() -> {
             while (true) {
                 try {
                     lecturaDto.value.listTU = conversoDTO(this.listplcTu).toArray(new grsaa.sop_corba.GestionDispositivosPackage.DatosPlcTu_DTO[0]);
-                    Thread.sleep(30000);
+                    Thread.sleep(1000);
                     if (refServant2.lectura(lecturaDto) == 1) {
                         System.out.println("Se terminó la lectura.");
+                        grsaa.sop_corba.GestionDispositivosPackage.Factura_DTOHolder auxFactura = new grsaa.sop_corba.GestionDispositivosPackage.Factura_DTOHolder();
+
+                        for(DatosPlcTu_DTO tu : listplcTu)
+                        {
+                            auxFactura.value = new grsaa.sop_corba.GestionDispositivosPackage.Factura_DTO();
+                            refServant2.recuperarFactura(tu.id_plctu, auxFactura);
+                            actualizarConsumo(tu.id_plctu, auxFactura.value.consumo);
+                            notificarFacturas(tu.id_plctu);
+                        }
+
                         System.out.println("Se entergaron los valores de consumo y lectura.");
                         stopConsumoAleatorio();
-                        listplcTu = conversoDTO2(new ArrayList<>(Arrays.asList(lecturaDto.value.listTU)));
                         break;
                     }
                 } catch (InterruptedException e) {
@@ -230,7 +250,7 @@ public class GestionPlcTuImpl extends plc_mms.sop_corba.GestionPlcTuPOA {
                 }
 
             }
-        });
+            });
         thread.start();
     }
 
@@ -258,7 +278,7 @@ public class GestionPlcTuImpl extends plc_mms.sop_corba.GestionPlcTuPOA {
                     int numero = rand.nextInt(maxNumero);
                     plcTuAleatorio.lectura = (plcTuAleatorio.lectura + numero);
                     System.out.println("El ID:" + plcTuAleatorio.id_plctu + " registra una lectura de: " + plcTuAleatorio.lectura);
-                    Thread.sleep(5000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -30,7 +30,7 @@ public class ConsultarFactura extends JFrame {
         setContentPane(PanelLectura);
         setTitle("Login");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(300, 600);
+        setSize(400, 600);
         setLocationRelativeTo(null);
         setVisible(true);
         btnConsultar.addActionListener(new ActionListener() {

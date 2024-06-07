@@ -28,12 +28,12 @@ public class GestionDispositivosImpl extends grsaa.sop_corba.GestionDispositivos
 
         System.out.println("Se esta iniciando la lectura.");
         GestionTU.listTU =  objLectura.value.listTU;
-        if(varContador == GestionTU.listTU.length)
+        if(varContador == this.GestionTU.listTU.length)
         {
             objLectura.value.listTU = GestionTU.listTU;
             return 1;
         }
-        for (grsaa.sop_corba.GestionDispositivosPackage.DatosPlcTu_DTO plcTu : GestionTU.listTU) {
+        for (grsaa.sop_corba.GestionDispositivosPackage.DatosPlcTu_DTO plcTu : this.GestionTU.listTU) {
             if(contarLineas(GestionTU.idPlcmms+"_"+plcTu.id_plctu+".txt")<4) {
                 escribirArchivo(GestionTU.idPlcmms, plcTu.id_plctu, plcTu.lectura);
             }
